@@ -33,5 +33,5 @@ deploydocs(
     repo = "github.com/tudo-physik-e4/EFTfitter.jl.git",
     forcepush = true,
     push_preview = true,
-    devbranch = "dev"
+    devbranch = "main"
 )
