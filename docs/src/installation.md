@@ -21,7 +21,7 @@ EFTfitter.jl is not yet a registered Julia package but still easy to install.
 To install it, simply run:
 ```julia
 julia> using Pkg
-julia> pkg"add https://github.com/Cornelius-G/EFTfitter.jl#dev"
+julia> pkg"add https://github.com/tudo-physik-e4/EFTfitter.jl#dev"
 ```
 ### Installing dependencies: BAT.jl and further Julia packages 
 BAT.jl (v.2.0) is required for EFTfitter. To install it, run:

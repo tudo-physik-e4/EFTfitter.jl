@@ -4,7 +4,7 @@
 #jl #~This tutorial introduces the basic functionalities of EFTfitter.jl using a generic example.  
 #jl #~More functionalities of EFTfitter.jl, like handling nuisance correlations
 #jl #~or ranking measurements and uncertainties, are shown in the  
-#jl #~[advanced tutorial](https://cornelius-g.github.io/EFTfitter.jl/dev/advanced_tutorial/). 
+#jl #~[advanced tutorial](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/advanced_tutorial/). 
 #md # Table of contents:
 #md # ```@contents
 #md # Pages = ["tutorial.md"]

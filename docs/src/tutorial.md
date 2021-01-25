@@ -7,8 +7,8 @@ Depth = 3
 ```
 
 !!! note
-    An executable version of this tutorial can be found [here](https://github.com/Cornelius-G/EFTfitter.jl/tree/dev/examples/tutorial).
-    A template to help starting your own analysis is available [here](https://github.com/Cornelius-G/EFTfitter.jl/tree/master/examples/empty_template).
+    An executable version of this tutorial can be found [here](https://github.com/tudo-physik-e4/EFTfitter.jl/tree/dev/examples/tutorial).
+    A template to help starting your own analysis is available [here](https://github.com/tudo-physik-e4/EFTfitter.jl/tree/master/examples/empty_template).
 ---
 It is recommended to store the inputs (i.e. parameters, observables, measurements and correlations)
 and the actual analysis in two separate files. This allows to simply load different configurations
@@ -16,7 +16,7 @@ of the model. We will therefore also consider two files: `tutorial_inputs.jl` an
 
 ## File "tutorial_inputs.jl"
 We start by defining all neccesary inputs to create an
-[`EFTfitterModel`](https://cornelius-g.github.io/EFTfitter.jl/dev/api/#EFTfitter.EFTfitterModel).
+[`EFTfitterModel`](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/api/#EFTfitter.EFTfitterModel).
 
 ### Parameters
 We specify the parameters our model depends on and choose a prior for each of the parameters.
@@ -91,8 +91,8 @@ diff_xsec = [diff_xsec_bin1, diff_xsec_bin2, diff_xsec_bin3]
 ```
 
 Note: Another way to define a vector of functions for the bins of distributions
-is shown [here](https://cornelius-g.github.io/EFTfitter.jl/dev/advanced_tutorial/#Creating-a-vector-of-functions-for-distributions-1)
-in the [advanced tutorial](https://cornelius-g.github.io/EFTfitter.jl/dev/advanced_tutorial/).
+is shown [here](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/advanced_tutorial/#Creating-a-vector-of-functions-for-distributions-1)
+in the [advanced tutorial](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/advanced_tutorial/).
 This can be particularly useful when the predictions for the individual bins
 have a similar functional relation and only differ in terms of some coefficients,
 as it is the case here in this example.
@@ -100,12 +100,12 @@ as it is the case here in this example.
 ### Measurements
 We can now enter measurements of the observables.
 This is done by defining a [`NamedTuple`](https://docs.julialang.org/en/v1/manual/types/#Named-Tuple-Types)
-consisting of [`Measurement`](https://cornelius-g.github.io/EFTfitter.jl/dev/api/#EFTfitter.Measurement)
-and [`MeasurementDistribution`](https://cornelius-g.github.io/EFTfitter.jl/dev/api/#EFTfitter.MeasurementDistribution) objects.
+consisting of [`Measurement`](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/api/#EFTfitter.Measurement)
+and [`MeasurementDistribution`](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/api/#EFTfitter.MeasurementDistribution) objects.
 
 A `Measurement` consists of the observable, the measured numerical value and
 numerical values for the (multiple types of) uncertainties.
-The observable can be passed to the `Measurement` either as an [`Observable`](https://cornelius-g.github.io/EFTfitter.jl/dev/api/#EFTfitter.Observable)
+The observable can be passed to the `Measurement` either as an [`Observable`](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/api/#EFTfitter.Observable)
 object or as a `Function`. When using the latter, the observable is assumed to be unconstrained.
 The uncertainties are passed as a [`NamedTuple`](https://docs.julialang.org/en/v1/manual/types/#Named-Tuple-Types).
 Each measurement has to provide uncertainty values for all of the (active) uncertainty
@@ -131,8 +131,8 @@ measurements = (
 )
 ```
 
-Further information on the constructors see the API documentation of [`Measurement`](https://cornelius-g.github.io/EFTfitter.jl/dev/api/#EFTfitter.Measurement)
-and [`MeasurementDistribution`](https://cornelius-g.github.io/EFTfitter.jl/dev/api/#EFTfitter.MeasurementDistribution).
+Further information on the constructors see the API documentation of [`Measurement`](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/api/#EFTfitter.Measurement)
+and [`MeasurementDistribution`](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/api/#EFTfitter.MeasurementDistribution).
 
 !!! note
     When using only one measurement or only one type of uncertainties, make sure to insert a comma, like: `uncertainties = (stat = 0.5,)` so that Julia can parse the [`NamedTuple`](https://docs.julialang.org/en/v1/manual/types/#Named-Tuple-Types) correctly!
@@ -140,7 +140,7 @@ and [`MeasurementDistribution`](https://cornelius-g.github.io/EFTfitter.jl/dev/a
 ### Correlations
 The correlations between the uncertainties of the measurements need to be provided
 for each of the uncertainty types. We can pass them by defining a `NamedTuple`
-of [`Correlation`](https://cornelius-g.github.io/EFTfitter.jl/dev/api/#EFTfitter.Correlation)
+of [`Correlation`](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/api/#EFTfitter.Correlation)
 objects that contain the corresponding correlation matrices.
 The correlation matrix for each type of uncertainty needs to have a size
 of ``N \times N``, where ``N`` is the number of measurements, counting each bin of a distribution.

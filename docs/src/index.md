@@ -45,14 +45,14 @@ is the sum over the covariances of all ``k`` types of uncertainties.
 * treat unknown correlation coefficients as nuisance parameters in the fit
 
 ## Documentation & Tutorials
-Please see the [Tutorial](https://cornelius-g.github.io/EFTfitter.jl/dev/tutorial/) and
-[Advanced Tutorial](https://cornelius-g.github.io/EFTfitter.jl/dev/advanced_tutorial/) for
+Please see the [Tutorial](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/tutorial/) and
+[Advanced Tutorial](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/advanced_tutorial/) for
 detailed information on how to use EFTfitter. 
-Executable versions of the tutorials can be found [here](https://github.com/Cornelius-G/EFTfitter.jl/tree/dev/examples).
-You can also try EFTfitter.jl right now at [binder](https://github.com/Cornelius-G/EFTfitter.jl/tree/dev/examples/notebooks).
+Executable versions of the tutorials can be found [here](https://github.com/tudo-physik-e4/EFTfitter.jl/tree/dev/examples).
+You can also try EFTfitter.jl right now at [binder](https://github.com/tudo-physik-e4/EFTfitter.jl/tree/dev/examples/notebooks).
 
 All functions and types are documented in the
-[API Documentation](https://cornelius-g.github.io/EFTfitter.jl/dev/api/).
+[API Documentation](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/api/).
 ---
 ## Citing EFTfitter
 

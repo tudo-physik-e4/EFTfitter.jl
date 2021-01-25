@@ -12,7 +12,7 @@ makedocs(
     modules = [EFTfitter],
     format = Documenter.HTML(
         prettyurls = !("local" in ARGS),
-        canonical = "https://github.com/Cornelius-G/EFTfitter.jl"
+        canonical = "https://github.com/tudo-physik-e4/EFTfitter.jl"
     ),
     pages = [
         "Home" => "index.md",
@@ -30,7 +30,7 @@ makedocs(
 )
 
 deploydocs(
-    repo = "github.com/Cornelius-G/EFTfitter.jl.git",
+    repo = "github.com/tudo-physik-e4/EFTfitter.jl.git",
     forcepush = true,
     push_preview = true,
     devbranch = "dev"

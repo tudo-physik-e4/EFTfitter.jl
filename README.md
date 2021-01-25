@@ -1,9 +1,9 @@
 
 # EFTfitter.jl
 
-[![Build Status](https://github.com/invenia/PkgTemplates.jl/workflows/CI/badge.svg)](https://github.com/Cornelius-G/EFTfitter.jl/actions)
-[![Documentation for stable version](https://img.shields.io/badge/docs-stable-blue.svg)](https://Cornelius-G.github.io/EFTfitter.jl/stable)
-[![Documentation for development version](https://img.shields.io/badge/docs-dev-blue.svg)](https://Cornelius-G.github.io/EFTfitter.jl/dev)
+[![Build Status](https://github.com/invenia/PkgTemplates.jl/workflows/CI/badge.svg)](https://github.com/tudo-physik-e4/EFTfitter.jl/actions)
+[![Documentation for stable version](https://img.shields.io/badge/docs-stable-blue.svg)](https://tudo-physik-e4.github.io/EFTfitter.jl/stable)
+[![Documentation for development version](https://img.shields.io/badge/docs-dev-blue.svg)](https://tudo-physik-e4.github.io/EFTfitter.jl/dev)
 
 
 New implementation of the [EFTfitter](https://github.com/tudo-physik-e4/EFTfitterRelease) in the [Julia languange](https://julialang.org/). 
@@ -16,19 +16,19 @@ Work-in-progress, interfaces and functionalities might be subject to changes.
 The EFTfitter.jl package can be installed using:
 ```julia
 julia> using Pkg
-julia> pkg"add https://github.com/Cornelius-G/EFTfitter.jl#master"
+julia> pkg"add https://github.com/tudo-physik-e4/EFTfitter.jl#master"
 ```
 
-Please see the [installation guide](https://cornelius-g.github.io/EFTfitter.jl/dev/installation/) for further information on the installation of Julia, EFTfitter.jl and its dependencies.
+Please see the [installation guide](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/installation/) for further information on the installation of Julia, EFTfitter.jl and its dependencies.
 
 
 ## Documentation & Tutorials
-Please see the [documentation](https://cornelius-g.github.io/EFTfitter.jl/dev/) of EFTfitter.jl for further information.\
-Tutorials and examples on how to use EFTfitter.jl can be found [here](https://github.com/Cornelius-G/EFTfitter.jl/tree/dev/examples/tutorials).
+Please see the [documentation](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/) of EFTfitter.jl for further information.\
+Tutorials and examples on how to use EFTfitter.jl can be found [here](https://github.com/tudo-physik-e4/EFTfitter.jl/tree/dev/examples/tutorials).
 
 
 ## Template
-A template for starting the implementation of your own analysis is provided [here](https://github.com/Cornelius-G/EFTfitter.jl/tree/dev/examples/empty_template).
+A template for starting the implementation of your own analysis is provided [here](https://github.com/tudo-physik-e4/EFTfitter.jl/tree/dev/examples/empty_template).
 
 
 ## Citing EFTfitter.jl

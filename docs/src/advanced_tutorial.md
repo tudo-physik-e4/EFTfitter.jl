@@ -14,7 +14,7 @@ bin can, however, become tedious for a large number of bins, especially since ty
 the bins of a distribution have a similar functional dependence on the model parameters
 and only differ in some coefficients. In such cases, it is possible to use Julia's
 [metaprogramming](https://docs.julialang.org/en/v1/manual/metaprogramming/) features to
-create the vector of functions. The distribution in our [basic tutorial](https://cornelius-g.github.io/EFTfitter.jl/dev/tutorial/)
+create the vector of functions. The distribution in our [basic tutorial](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/tutorial/)
 has been defined by implementing three functions that all call the same function `myfunc`
 but with different values for the coefficients
 The same result can also be achieved like this:
@@ -50,7 +50,7 @@ Information about the uncertainties of measurements need to be provided to EFTfi
 in terms of the uncertainty values and corresponding correlation matrices.
 If you have these information in terms of covariance matrices, you need to convert it
 to correlation matrices and uncertainty values before. The function
-[`cov_to_cor`](https://cornelius-g.github.io/EFTfitter.jl/dev/api/#EFTfitter.cov_to_cor-Tuple{Array{var%22#s58%22,2}%20where%20var%22#s58%22%3C:Real})
+[`cov_to_cor`](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/api/#EFTfitter.cov_to_cor-Tuple{Array{var%22#s58%22,2}%20where%20var%22#s58%22%3C:Real})
 can be used for this:
 
 ```julia
