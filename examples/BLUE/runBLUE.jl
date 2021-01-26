@@ -50,7 +50,7 @@ correlations = (
 
 # construct an `EFTfitterModel`:
 model = EFTfitterModel(parameters, measurements, correlations)
-posterior = PosteriorDensity(model)
+posterior = PosteriorDensity(model);
 
 # sample the posterior with BAT.jl:
 algorithm = MCMCSampling(mcalg =MetropolisHastings(), nsteps = 10^6, nchains = 4)

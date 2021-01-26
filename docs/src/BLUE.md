@@ -67,7 +67,7 @@ construct an `EFTfitterModel`:
 
 ```julia
 model = EFTfitterModel(parameters, measurements, correlations)
-posterior = PosteriorDensity(model)
+posterior = PosteriorDensity(model);
 ```
 
 sample the posterior with BAT.jl:
@@ -83,7 +83,7 @@ plot the posterior distribution for the combination parameter τ:
 plot(samples, :τ, mean=true)
 ```
 
-![blue plots](plot_blue.png)
+![blue plots](plots/plot_blue.png)
 
 print numerical results of combination:
 

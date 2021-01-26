@@ -24,11 +24,11 @@ Please see the [installation guide](https://tudo-physik-e4.github.io/EFTfitter.j
 
 ## Documentation & Tutorials
 Please see the [documentation](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/) of EFTfitter.jl for further information.\
-Tutorials and examples on how to use EFTfitter.jl can be found [here](https://github.com/tudo-physik-e4/EFTfitter.jl/tree/dev/examples/tutorials).
+Tutorials and examples on how to use EFTfitter.jl can be found [here](https://github.com/tudo-physik-e4/EFTfitter.jl/tree/main/examples/tutorials).
 
 
 ## Template
-A template for starting the implementation of your own analysis is provided [here](https://github.com/tudo-physik-e4/EFTfitter.jl/tree/dev/examples/empty_template).
+A template for starting the implementation of your own analysis is provided [here](https://github.com/tudo-physik-e4/EFTfitter.jl/tree/main/examples/empty_template).
 
 
 ## Citing EFTfitter.jl

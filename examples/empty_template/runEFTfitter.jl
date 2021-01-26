@@ -12,7 +12,7 @@ include("inputs.jl")
 # create an `EFTfitterModel` object:
 model = EFTfitterModel(parameters, measurements, correlations)
 # create posterior distribution:
-posterior = PosteriorDensity(model)
+posterior = PosteriorDensity(model);
 
 # sample the posterior distribution with BAT.jl:
 algorithm = MCMCSampling(mcalg = MetropolisHastings(), nsteps = 10^5, nchains = 4)

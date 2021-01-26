@@ -7,7 +7,7 @@ Depth = 3
 ```
 
 !!! note
-    An executable version of this tutorial can be found [here](https://github.com/tudo-physik-e4/EFTfitter.jl/tree/dev/examples/tutorial).
+    An executable version of this tutorial can be found [here](https://github.com/tudo-physik-e4/EFTfitter.jl/tree/main/examples/tutorial).
     A template to help starting your own analysis is available [here](https://github.com/tudo-physik-e4/EFTfitter.jl/tree/master/examples/empty_template).
 ---
 It is recommended to store the inputs (i.e. parameters, observables, measurements and correlations)

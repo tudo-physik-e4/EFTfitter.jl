@@ -48,8 +48,8 @@ is the sum over the covariances of all ``k`` types of uncertainties.
 Please see the [Tutorial](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/tutorial/) and
 [Advanced Tutorial](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/advanced_tutorial/) for
 detailed information on how to use EFTfitter. 
-Executable versions of the tutorials can be found [here](https://github.com/tudo-physik-e4/EFTfitter.jl/tree/dev/examples).
-You can also try EFTfitter.jl right now at [binder](https://github.com/tudo-physik-e4/EFTfitter.jl/tree/dev/examples/notebooks).
+Executable versions of the tutorials can be found [here](https://github.com/tudo-physik-e4/EFTfitter.jl/tree/main/examples).
+You can also try EFTfitter.jl right now at [binder](https://github.com/tudo-physik-e4/EFTfitter.jl/tree/main/examples/notebooks).
 
 All functions and types are documented in the
 [API Documentation](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/api/).
