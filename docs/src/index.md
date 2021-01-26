@@ -48,12 +48,13 @@ is the sum over the covariances of all ``k`` types of uncertainties.
 Please see the [Tutorial](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/tutorial/) and
 [Advanced Tutorial](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/advanced_tutorial/) for
 detailed information on how to use EFTfitter. 
-Executable versions of the tutorials can be found [here](https://github.com/tudo-physik-e4/EFTfitter.jl/tree/main/examples).
-You can also try EFTfitter.jl right now at [binder](https://github.com/tudo-physik-e4/EFTfitter.jl/tree/main/examples/notebooks).
+Executable versions of the tutorials can be found [here](https://github.com/tudo-physik-e4/EFTfitter.jl/tree/main/examples).   
+You can also try EFTfitter.jl right now at binder: [![badge](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/tudo-physik-e4/EFTfitter.jl/binder?urlpath=git-pull%3Frepo%3Dhttps%253A%252F%252Fgithub.com%252Ftudo-physik-e4%252FEFTfitter.jl%26urlpath%3Dtree%252FEFTfitter.jl%252Fexamples%252Fnotebooks%252F%26branch%3Dmain)
 
 All functions and types are documented in the
 [API Documentation](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/api/).
----
+
+----
 ## Citing EFTfitter
 
 When using EFTfitter.jl for your work, please consider citing:
