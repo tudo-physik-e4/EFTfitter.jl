@@ -4,6 +4,7 @@
 [![Build Status](https://github.com/invenia/PkgTemplates.jl/workflows/CI/badge.svg)](https://github.com/tudo-physik-e4/EFTfitter.jl/actions)
 [![Documentation for stable version](https://img.shields.io/badge/docs-stable-blue.svg)](https://tudo-physik-e4.github.io/EFTfitter.jl/stable)
 [![Documentation for development version](https://img.shields.io/badge/docs-dev-blue.svg)](https://tudo-physik-e4.github.io/EFTfitter.jl/dev)
+[![badge](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/tudo-physik-e4/EFTfitter.jl/binder?urlpath=git-pull%3Frepo%3Dhttps%253A%252F%252Fgithub.com%252Ftudo-physik-e4%252FEFTfitter.jl%26urlpath%3Dtree%252FEFTfitter.jl%252Fexamples%252Fnotebooks%252F%26branch%3Dmain)
 
 
 New implementation of the [EFTfitter](https://github.com/tudo-physik-e4/EFTfitterRelease) in the [Julia languange](https://julialang.org/). 
@@ -23,8 +24,10 @@ Please see the [installation guide](https://tudo-physik-e4.github.io/EFTfitter.j
 
 
 ## Documentation & Tutorials
-Please see the [documentation](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/) of EFTfitter.jl for further information.\
-Tutorials and examples on how to use EFTfitter.jl can be found [here](https://github.com/tudo-physik-e4/EFTfitter.jl/tree/main/examples/tutorials).
+Please see the [documentation](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/) for tutorials and information on how to use EFTfitter.jl.  
+Executable versions of the tutorials and examples can also be found [here](https://github.com/tudo-physik-e4/EFTfitter.jl/tree/main/examples/tutorials).
+
+You can also try running the tutorials right now: [![badge](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/tudo-physik-e4/EFTfitter.jl/binder?urlpath=git-pull%3Frepo%3Dhttps%253A%252F%252Fgithub.com%252Ftudo-physik-e4%252FEFTfitter.jl%26urlpath%3Dtree%252FEFTfitter.jl%252Fexamples%252Fnotebooks%252F%26branch%3Dmain)
 
 
 ## Template
