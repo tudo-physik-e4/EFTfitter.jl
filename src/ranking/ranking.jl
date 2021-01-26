@@ -35,7 +35,7 @@ struct MeasurementRanks <: AbstractRanks
     
     function MeasurementRanks(
         names::Vector{Symbol}, 
-        values::Vector{Float64}, 
+        values::Vector{<:Real}, 
         criterion::AbstractRankingCriterion;
         order::Symbol = :values,
         rev::Bool = false
@@ -79,7 +79,7 @@ struct UncertaintyRanks <: AbstractRanks
     
     function UncertaintyRanks(
         names::Vector{Symbol}, 
-        values::Vector{Float64}, 
+        values::Vector{<:Real}, 
         criterion::AbstractRankingCriterion;
         order::Symbol = :values,
         rev::Bool = false
@@ -270,7 +270,7 @@ end
 function sort_ranking_results(
     order::Symbol, 
     names::Vector{Symbol}, 
-    values::Vector{Float64};
+    values::Vector{<:Real};
     rev=false
 )
     if order == :names

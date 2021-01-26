@@ -81,12 +81,12 @@
     end
     
     @testset "Test ranking function" begin
-        meas_ranks = EFTfitter.rank_measurements(model1)  
+        meas_ranks = EFTfitter.rank_measurements(model1, sampling_algorithm=SobolSampler(nsamples = 10^5))  
         @test meas_ranks.names == [:meas4_bin1, :meas4_bin3, :meas1, :meas3] 
-        @test meas_ranks.values ≈ [0.1791044776119403, 0.1417910447761194, 0.0, 0.0] rtol=0.4
+        @test meas_ranks.values ≈ [0.179104478, 0.11940298, 0.0, 0.0] rtol=0.1
 
-        unc_ranks = EFTfitter.rank_uncertainties(model1, order=:names, rev=false)  
+        unc_ranks = EFTfitter.rank_uncertainties(model1, sampling_algorithm=SobolSampler(nsamples = 10^5), order=:names, rev=false)  
         @test unc_ranks.names == [:unc1, :unc3] 
-        @test unc_ranks.values ≈ [0.0299, 0.2621] rtol=0.4
+        @test unc_ranks.values ≈ [0.02985, 0.24627] rtol=0.1
     end
 end
