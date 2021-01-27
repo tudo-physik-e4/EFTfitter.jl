@@ -80,6 +80,13 @@ display(sd)
 #md C1     │    0.122271   -0.0070394
 #md C2     │  -0.0070394  0.000442548
 
+#~Information about the smallest 1d intervals containing p% proability can be
+#~obtained using the `get_interval_edges` function:
+interval_1d_C1 = EFTfitter.get_interval_edges(samples, :C1, 0.9, bins=200, atol=0.1)
+println(interval_1d_C1.lower,  interval_1d_C1.upper)
+
+#~The keyword 
+
 #~Of course, plotting the resulting posterior distributions is also simple 
 #~using Plots.jl and the BAT.jl plotting recipes:
 p = plot(samples)
@@ -89,3 +96,11 @@ p = plot(samples)
 #~For information on how to customize plots of the samples, please see the BAT.jl 
 #~[plotting documentation](https://bat.github.io/BAT.jl/dev/plotting/) and 
 #~[examples](https://github.com/bat/BAT.jl/blob/master/examples/dev-internal/plotting_examples.jl).
+
+p = plot(samples, 0.9)
+#!nb savefig(p, "plot_1d.pdf")
+#md # ![example plot](plots/interval_plot_1.png)
+
+#~For customizing the plots of the 1D intervals, also see the EFTfitter 
+#~[plotting documentation](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/plotting/) 
+#~and [tutorial](https://github.com/tudo-physik-e4/EFTfitter.jl/blob/main/examples/tutorial/plotting.jl).

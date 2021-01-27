@@ -16,6 +16,10 @@ we use the inputs from the basic tutorial:
 ```julia
 include("tutorial_inputs.jl")
 model = EFTfitterModel(parameters, measurements, correlations)
+
+posterior = PosteriorDensity(model)
+algorithm = MCMCSampling(mcalg = MetropolisHastings(), nsteps = 10^5, nchains = 4)
+samples = bat_sample(posterior, algorithm).result;
 ```
 
 Note: All plots generated with the following plot recipes can be customized using the
@@ -144,6 +148,40 @@ plot!(get_measurement_distributions(model), :MeasDist, st=:scatter, uncertaintie
 ```
 
 ![example plot](plots/measdist_plot_3.png)
+
+## Plotting 1D Intervals
+Default plot of the smallest 1D intervals containing 90% posterior probability:
+
+```julia
+plot(samples, 0.9)
+```
+
+![example plot](plots/interval_plot_1.png)
+
+Default settings for keywords:
+
+```julia
+plot(samples, 0.9,
+    parameter_names = get_parameter_names(maybe_shaped_samples), # Array of String with the names of the parameters
+    y_positons = collect(1:length(parameter_names))*-1, # y-positions of the interval lines
+    y_offset = 0, # offest on the y-axis, helpful when plotting multiple samples on top of each other
+    bins = 200, # number of bins for calculating smallest intervals
+    atol = 0,) # merge intervals that are seperated less then atol (especially helpful when using a high number of bins)
+```
+
+helpful keyword arguments:
+ msc = markerstrokecolor: color of the interval lines
+ msw = markerstrokewidth: linewidth
+ ms = markersize: size of caps
+
+Customized 1D interval plot:
+
+```julia
+p = plot(samples, 0.9, bins = 400, atol=0.01, y_offset=-0.1, label = "Samples A")
+p = plot!(samples, 0.9, bins = 100, atol=0.05, y_offset=0.1, msw = 5, ms=8, msc=:red, label = "Samples B")
+```
+
+![example plot](plots/interval_plot_2.png)
 
 ---
 

@@ -110,6 +110,24 @@ function get_interval(samples, key, p; bins=200)
     return sum(upper .- lower)
 end
 
+#TODO: export & docu
+# interval edges of 1d marginal smallest intervals
+function get_interval_edges(
+    samples::DensitySampleVector, 
+    key::Union{Symbol, Real}, 
+    p::Real; 
+    bins=200,
+    atol=0.0)
+    
+    marg = BAT.get_marginal_dist(samples, key, bins=bins).result
+
+    marghist = convert(Histogram, marg.dist)
+    hist_p = BAT.get_smallest_intervals(marghist, [p])[1][1]
+
+    lower, upper = BAT.get_interval_edges(hist_p, atol=atol)
+    return (lower=lower, upper=upper)
+end
+
 
 function get_volume(samples, keys, p; bins=200)
     marghist = get_marginal_hist(samples, keys, bins=bins)
