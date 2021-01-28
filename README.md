@@ -4,6 +4,7 @@
 [![Build Status](https://github.com/invenia/PkgTemplates.jl/workflows/CI/badge.svg)](https://github.com/tudo-physik-e4/EFTfitter.jl/actions)
 [![Documentation for stable version](https://img.shields.io/badge/docs-stable-blue.svg)](https://tudo-physik-e4.github.io/EFTfitter.jl/stable)
 [![Documentation for development version](https://img.shields.io/badge/docs-dev-blue.svg)](https://tudo-physik-e4.github.io/EFTfitter.jl/dev)
+[![License](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](LICENSE.md)
 [![badge](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/tudo-physik-e4/EFTfitter.jl/binder?urlpath=git-pull%3Frepo%3Dhttps%253A%252F%252Fgithub.com%252Ftudo-physik-e4%252FEFTfitter.jl%26urlpath%3Dtree%252FEFTfitter.jl%252Fexamples%252Fnotebooks%252F%26branch%3Dmain)
 
 
