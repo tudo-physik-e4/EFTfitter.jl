@@ -19,7 +19,7 @@ Work-in-progress, interfaces and functionalities might be subject to changes.
 The EFTfitter.jl package can be installed using:
 ```julia
 julia> using Pkg
-julia> pkg"add https://github.com/tudo-physik-e4/EFTfitter.jl"
+julia> pkg"add EFTfitter"
 ```
 
 Please see the [installation guide](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/installation/) for further information on the installation of Julia, EFTfitter.jl and its dependencies.
