@@ -120,27 +120,40 @@ savefig(p, "plot.pdf")
 With the `rank_measurements` and `rank_uncertainties` functions, the influence of
 the individual measurements or uncertainty types on the result of a fit can be estimated.
 For the ranking, each active measurement (respectively uncertainty type) is deactivated
-at a time and the fit is repeated. The results of all fits with one deactivated
+at a time and the fit is repeated. The results of the fits with a deactivated
 measurement (or uncertainty type) are then compared to the fit result with all measurements (uncertainty types) activated.
 A ranking is calculated based on a ranking criterion calculated from the posterior distributions of these fits.
 
 The default ranking criterion is the relative increase of the total width of the
 smallest interval containing 90% of the posterior probability when deactivating a measurement.
-For models with more than one parameter, the sum of relative increases of all
-one-dimensional smallest intervals is used. The default ranking criterion is therefore
+For models with more than one parameter, the sum of the relative increases of all
+one-dimensional smallest intervals is used, i.e. `SumOfSmallestIntervals(p=0.9, bins=200)`.
 
 ```julia
-#`SumOfSmallestIntervals(p=0.9, bins=200)`.
 measurement_ranking = EFTfitter.rank_measurements(model)
 ```
+
+The sampling algorithm to be used can be passed with the keyword `sampling_algorithm`.
+By default, `BAT.MCMCSampling()` is used, i.e. Metropolis-Hastings with 4 chains and 100000 steps.
+
+```julia
+plot(measurement_ranking, title = "Ranking of measurements")
+```
+
+![measurement ranking](plots/meas_ranks.png)
 
 For ranking the uncertainty types, the relative decrease is used.
 
 ```julia
-uncertainty_ranking = EFTfitter.rank_uncertainties(model, criterion = SumOfSmallestIntervals(p=0.9, bins=200))
+uncertainty_ranking = EFTfitter.rank_uncertainties(model,
+    criterion = SumOfSmallestIntervals(p=0.9, bins=200),
+    sampling_algorithm = SobolSampler(nsamples = 10^5), order = :values)
+
+plot(uncertainty_ranking, title = "Ranking of uncertainty types")
 ```
 
-Please see the [ranking documentation] for further ranking criteria and keyword arguments.
+![measurement ranking](plots/unc_ranks.png)
+Please see the [ranking documentation](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/api/#EFTfitter.rank_measurements) for further ranking criteria and keyword arguments.
 
 ---
 

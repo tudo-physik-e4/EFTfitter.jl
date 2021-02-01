@@ -17,11 +17,17 @@ Julia is available for Linux, OS-X and Windows, and easy to install:
 
 
 ## Installing EFTfitter.jl
-EFTfitter.jl is not yet a registered Julia package but still easy to install.
+EFTfitter.jl is a registered Julia package.
 To install it, simply run:
 ```julia
 julia> using Pkg
-julia> pkg"add https://github.com/tudo-physik-e4/EFTfitter.jl"
+julia> pkg"add EFTfitter"
+```
+
+If you want to use the latest development version of BAT (main branch), instead of the latest stable release, use
+```julia
+julia> using Pkg
+julia> pkg"add EFTfitter#main"
 ```
 ### Installing dependencies: BAT.jl and further Julia packages 
 BAT.jl (v.2.0) is required for EFTfitter. To install it, run:

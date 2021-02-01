@@ -81,11 +81,14 @@ display(sd)
 #md C2     │  -0.0070394  0.000442548
 
 #~Information about the smallest 1d intervals containing p% proability can be
-#~obtained using the `get_interval_edges` function:
-interval_1d_C1 = EFTfitter.get_interval_edges(samples, :C1, 0.9, bins=200, atol=0.1)
-println(interval_1d_C1.lower,  interval_1d_C1.upper)
+#~obtained using the `get_smallest_interval_edges` function:
+intervals_1d_C1 = get_smallest_interval_edges(samples, :C1, 0.9, bins=200, atol=0.1)
+println("lower interval edges: $(intervals_1d_C1.lower)")
+println("upper interval edges: $(intervals_1d_C1.upper)")
 
-#~The keyword 
+#~The keyword `atol` controls the absolute tolerance for which intervals are joined 
+#~together when they are seperated less than this value. This is particularly useful
+#~when a large number of bins is used.
 
 #~Of course, plotting the resulting posterior distributions is also simple 
 #~using Plots.jl and the BAT.jl plotting recipes:

@@ -19,7 +19,7 @@ end
     
     for i in 1:length(y_positons)
 
-        lower, upper =  get_interval_edges(samples, i, p, bins=bins, atol=atol)
+        lower, upper =  get_smallest_interval_edges(samples, i, p, bins=bins, atol=atol)
         w = 0.5*(upper-lower)
         middle = lower .+ w
         

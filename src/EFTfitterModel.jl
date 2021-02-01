@@ -126,13 +126,9 @@ function  get_observables(model::EFTfitterModel)
     observables_nt = namedtuple(obs_names, obs)
 end
 
-# TODO 
-#total_uncertainty(m::EFTfitterModel)
-
 
 
 #========================================================#
-
 
 function unpack(nt::NamedTuple{N,T}) where {N,T}
      return collect(nt), collect(keys(nt))
@@ -178,7 +174,7 @@ function only_active_measurements(
     measurements = measurements[active_idxs]
     measurement_keys = measurement_keys[active_idxs]
 
-    corrs = get_correlations.(correlations, Ref(active_idxs)) # TODO: ignore active=false matrices with to few dimensions
+    corrs = get_correlations.(correlations, Ref(active_idxs))
 
     return measurements, measurement_keys, corrs
 end
@@ -274,7 +270,6 @@ function only_active_nuisances(
     active_meas_keys::Array{Symbol, 1},
     unc_keys::Array{Symbol, 1}
 )
-    #TODO: check if nuisance key is in parameters
     nuisance_vec, nuisance_keys = unpack(nuisances)
 
     active_nuisances = NuisanceCorrelation[]
