@@ -338,7 +338,8 @@ function get_indices(measurements, symb)
     meas_vec, meas_keys = unpack(measurements)
     names = keys_of_bins(meas_vec, meas_keys)
     ind = [findfirst(x -> x==symb, names)]
-    if ind[1]!= nothing
+    
+    if ind[1] != nothing
         return ind
     else
         ind = [findfirst(x -> x==Symbol(String(symb)*"_bin$i"), names) for i in 1:length(measurements[symb].value)]
@@ -374,17 +375,23 @@ end
 """
 function to_correlation_matrix(
     measurements::NamedTuple{<:Any, <:Tuple{Vararg{AbstractMeasurement}}},
-    correlations::Tuple{Symbol,Symbol, Union{<:Real, Array{<:Real, 2}}}...
+    correlations::Any...#Tuple{Symbol,Symbol, Union{<:Real, Array{<:Real, 2}}}... #TODO: typing
 )
     nmeas = Nbins(measurements)
     corr = Matrix{Float64}(I, nmeas, nmeas)
 
-    for c in correlations
-        i = get_indices(measurements, c[1])
-        j = get_indices(measurements, c[2])
+    for c in correlations #TODO: split into functions
+        if isa(c, Tuple{Symbol,Symbol, Union{<:Real, Array{<:Real, 2}}})
+            i = get_indices(measurements, c[1])
+            j = get_indices(measurements, c[2])
 
-        corr[i, j] .= c[3]
-        corr[j, i] .= c[3]
+            corr[i, j] .= c[3]
+            corr[j, i] .= c[3]
+            
+        elseif isa(c, Tuple{Any, Union{<:Real, Array{<:Real, 2}}})
+            i = reduce(vcat, get_indices.(Ref(measurements), c[1]))
+            corr[i, i] .= c[2]
+        end
     end
 
     corr[diagind(corr)] .= 1
