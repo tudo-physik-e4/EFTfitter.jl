@@ -388,7 +388,7 @@ function to_correlation_matrix(
             corr[i, j] .= c[3]
             corr[j, i] .= c[3]
             
-        elseif isa(c, Tuple{Any, Union{<:Real, Array{<:Real, 2}}})
+        elseif isa(c, Tuple{Any, Union{<:Real, Array{<:Real, 2}}}) #TODO: add testing
             i = reduce(vcat, get_indices.(Ref(measurements), c[1]))
             corr[i, i] .= c[2]
         end
