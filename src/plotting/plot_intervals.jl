@@ -10,20 +10,20 @@ end
     maybe_shaped_samples::DensitySampleVector,
     p::Float64;
     parameter_names = get_parameter_names(maybe_shaped_samples),
-    y_positons = collect(1:length(parameter_names))*-1,
+    y_positions = collect(1:length(parameter_names))*-1,
     y_offset = 0,
     bins = 200,
     atol = 0,
 )
     samples = BAT.unshaped.(maybe_shaped_samples)
     
-    for i in 1:length(y_positons)
+    for i in 1:length(y_positions)
 
         lower, upper =  get_smallest_interval_edges(samples, i, p, bins=bins, atol=atol)
         w = 0.5*(upper-lower)
         middle = lower .+ w
         
-        ypos = fill(y_positons[i], length(middle)).-y_offset
+        ypos = fill(y_positions[i], length(middle)).-y_offset
         
         if i == 1
             intern_label = get(plotattributes, :label, "")
@@ -42,7 +42,7 @@ end
             markerstrokecolor --> :steelblue
             linecolor := internal_color
             xerror := w
-            yticks --> (y_positons, parameter_names)
+            yticks --> (y_positions, parameter_names)
             label := intern_label
             xguide --> "Ci"
 

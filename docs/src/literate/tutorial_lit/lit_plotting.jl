@@ -138,7 +138,7 @@ plot(samples, 0.9)
 #~Default settings for keywords:
 plot(samples, 0.9, 
     parameter_names = get_parameter_names(maybe_shaped_samples), # Array of String with the names of the parameters
-    y_positons = collect(1:length(parameter_names))*-1, # y-positions of the interval lines
+    y_positions = collect(1:length(parameter_names))*-1, # y-positions of the interval lines
     y_offset = 0, # offest on the y-axis, helpful when plotting multiple samples on top of each other
     bins = 200, # number of bins for calculating smallest intervals
     atol = 0,) # merge intervals that are seperated less then atol (especially helpful when using a high number of bins)
