@@ -124,7 +124,7 @@ function BAT.eval_logval_unchecked(
     r1 = m.invcov*r
     result = -dot(r, r1)
 
-    return  result
+    return  0.5*result
 end
 
 
@@ -147,7 +147,7 @@ function BAT.eval_logval_unchecked(
     r1 = invcov*r
     result = -dot(r, r1)
 
-    return  result
+    return  0.5*result
 end
 
 

@@ -62,7 +62,7 @@ function BLUE(m::EFTfitterModel)
     u = ones(nmeas)
     α = inv(covariance)*u/(u'*inv(covariance)*u)
     τ_BLUE = dot(α, meas)
-    σ_BLUE = dot(α, covariance*α)
+    σ_BLUE = sqrt(dot(α, covariance*α))
     
     return (value = τ_BLUE, unc = σ_BLUE, weights = α)
 end
