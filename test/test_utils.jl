@@ -101,6 +101,6 @@ end
     
     blue = EFTfitter.BLUE(m)
     @test blue.value ≈ 11.1598305 rtol=0.005
-    @test blue.unc ≈ 1.28604 rtol=0.005
+    @test blue.unc ≈ 1.134037 rtol=0.005
     @test blue.weights ≈ [0.1450748, 0.46957738, 0.34729705, 0.0380508] rtol=0.005
 end

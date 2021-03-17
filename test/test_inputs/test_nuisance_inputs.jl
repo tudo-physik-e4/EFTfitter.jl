@@ -113,14 +113,14 @@ using BAT
                                                                                          -0.0202275     0.00125517    9.35082      0.100917;
                                                                                          -0.0187827     0.00116552    0.100917     8.04283] rtol=0.01                                 
         # test evaluation of correct likelihood value at a few points:
-        @test BAT.eval_logval_unchecked(eftfitter_density, (p1=0.0, p2=0.0, ρ1=0)) ≈ -8177.6043 rtol=0.01
+        @test BAT.eval_logval_unchecked(eftfitter_density, (p1=0.0, p2=0.0, ρ1=0)) ≈ 0.5*-8177.6043 rtol=0.01
         @test BAT.eval_logval_unchecked(eftfitter_density, (p1=10.0, p2=-30.0, ρ1=0)) ≈ -Inf
-        @test BAT.eval_logval_unchecked(eftfitter_density, (p1=1.5, p2=-0.9, ρ1=0)) ≈ -1.39839704e6 rtol=0.01
-        @test BAT.eval_logval_unchecked(eftfitter_density, (p1=-1.2, p2=-0.8, ρ1=0)) ≈ -877307.384161 rtol=0.01
+        @test BAT.eval_logval_unchecked(eftfitter_density, (p1=1.5, p2=-0.9, ρ1=0)) ≈ 0.5*-1.39839704e6 rtol=0.01
+        @test BAT.eval_logval_unchecked(eftfitter_density, (p1=-1.2, p2=-0.8, ρ1=0)) ≈ 0.5*-877307.384161 rtol=0.01
         
-        @test BAT.eval_logval_unchecked(eftfitter_density, (p1=0.0, p2=0.0, ρ1=0.1)) ≈ -8182.2489 rtol=0.01
+        @test BAT.eval_logval_unchecked(eftfitter_density, (p1=0.0, p2=0.0, ρ1=0.1)) ≈ 0.5*-8182.2489 rtol=0.01
         @test BAT.eval_logval_unchecked(eftfitter_density, (p1=10.0, p2=-30.0, ρ1=0.2)) ≈ -Inf
-        @test BAT.eval_logval_unchecked(eftfitter_density, (p1=1.5, p2=-0.9, ρ1=0.4)) ≈ -1.39997084e6 rtol=0.01
+        @test BAT.eval_logval_unchecked(eftfitter_density, (p1=1.5, p2=-0.9, ρ1=0.4)) ≈ 0.5*-1.39997084e6 rtol=0.01
     end
     
 end
