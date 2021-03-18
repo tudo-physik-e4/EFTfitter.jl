@@ -74,19 +74,19 @@
     end
     
     @testset "Test criterion_value" begin
-        @test_broken EFTfitter.criterion_value(SmallestInterval(key=:p1, p=0.9), unc_models[1],) ≈ 0.264 rtol = 0.05
-        @test_broken EFTfitter.criterion_value(SmallestInterval(key=:p2, p=0.9), unc_models[1],) ≈ 0.066 rtol = 0.05
+        @test EFTfitter.criterion_value(SmallestInterval(key=:p1, p=0.9), unc_models[1],) ≈ 0.284 rtol = 0.05
+        @test EFTfitter.criterion_value(SmallestInterval(key=:p2, p=0.9), unc_models[1],) ≈ 0.071 rtol = 0.05
         
-        @test_broken EFTfitter.criterion_value(SumOfSmallestIntervals(p=0.9), unc_models[1],) ≈ [0.264, 0.066] rtol = 0.05
+        @test EFTfitter.criterion_value(SumOfSmallestIntervals(p=0.9), unc_models[1],) ≈ [0.284, 0.071] rtol = 0.05
     end
     
     @testset "Test ranking function" begin
         meas_ranks = EFTfitter.rank_measurements(model1, sampling_algorithm=SobolSampler(nsamples = 10^5))  
         @test meas_ranks.names == [:meas4_bin1, :meas4_bin3, :meas1, :meas3] 
-        @test_broken meas_ranks.values ≈ [0.179104478, 0.11940298, 0.0, 0.0] rtol=0.1
+        @test meas_ranks.values ≈ [0.229, 0.166, 0.0, 0.0] rtol=0.1
 
         unc_ranks = EFTfitter.rank_uncertainties(model1, sampling_algorithm=SobolSampler(nsamples = 10^5), order=:names, rev=false)  
         @test unc_ranks.names == [:unc1, :unc3] 
-        @test_broken unc_ranks.values ≈ [0.02985, 0.24627] rtol=0.1
+        @test unc_ranks.values ≈ [0.0278, 0.306] rtol=0.1
     end
 end

@@ -58,10 +58,10 @@
         @test eftfitter_density.check_bounds == true
     
         # test evaluation of correct likelihood value at a few points:
-        @test BAT.eval_logval_unchecked(eftfitter_density, (p1=0.0, p2=0.0)) ≈ 0.5*-90.14796 rtol=0.01
+        @test BAT.eval_logval_unchecked(eftfitter_density, (p1=0.0, p2=0.0)) ≈ -45.07398 rtol=0.01
         @test BAT.eval_logval_unchecked(eftfitter_density, (p1=10.0, p2=-30.0)) ≈ -Inf
-        @test BAT.eval_logval_unchecked(eftfitter_density, (p1=1.5, p2=-0.9)) ≈ 0.5*-137.31502 rtol=0.01
-        @test BAT.eval_logval_unchecked(eftfitter_density, (p1=-1.2, p2=-0.8)) ≈ 0.5*-74.3714 rtol=0.01
+        @test BAT.eval_logval_unchecked(eftfitter_density, (p1=1.5, p2=-0.9)) ≈ -68.6575 rtol=0.01
+        @test BAT.eval_logval_unchecked(eftfitter_density, (p1=-1.2, p2=-0.8)) ≈ -37.1857 rtol=0.01
     end
     
 end
