@@ -1,7 +1,7 @@
 name = "EFTfitter"
 uuid = "2a2a6a96-a4ec-477f-941b-476720990667"
 authors = ["Cornelius Grunwald"]
-version = "0.1.1"
+version = "0.1.2"
 
 [deps]
 BAT = "c0cd4b16-88b7-57fa-983b-ab80aecada7e"
