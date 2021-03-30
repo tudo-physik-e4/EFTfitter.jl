@@ -1,7 +1,7 @@
 
 # EFTfitter.jl
 
-[![Build Status](https://github.com/invenia/PkgTemplates.jl/workflows/CI/badge.svg)](https://github.com/tudo-physik-e4/EFTfitter.jl/actions)
+[![CI](https://github.com/tudo-physik-e4/EFTfitter.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/tudo-physik-e4/EFTfitter.jl/actions/workflows/ci.yml)
 [![Documentation for stable version](https://img.shields.io/badge/docs-stable-blue.svg)](https://tudo-physik-e4.github.io/EFTfitter.jl/stable)
 [![Documentation for development version](https://img.shields.io/badge/docs-dev-blue.svg)](https://tudo-physik-e4.github.io/EFTfitter.jl/dev)
 [![License](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](LICENSE.md)

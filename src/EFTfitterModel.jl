@@ -312,8 +312,7 @@ end
 
 function get_total_covariance(m::EFTfitterModel)
     covs = get_covariances(m)
-    total_cov = sum(covs)
-    total_cov = convert(Array{Float64,2}, total_cov)
+    total_cov = Symmetric(sum(covs))
 
     return total_cov
 end
