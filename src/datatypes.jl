@@ -181,12 +181,13 @@ Correlation(matrix::Array{<:Real, 2}; active::Bool = true)
 ```
 """
 struct Correlation <: AbstractCorrelation
-    matrix::Array{Float64, 2}
+    matrix::Symmetric{Float64,Array{Float64,2}}
     active::Bool
 end
 
 function Correlation(matrix::Array{<:Real, 2}; active::Bool = true)
-    Correlation(matrix, active)
+    symmatrix = Symmetric(matrix)
+    Correlation(symmatrix, active)
 end
 
 @with_kw struct NoCorrelation <: AbstractCorrelation

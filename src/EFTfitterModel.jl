@@ -187,10 +187,10 @@ function get_correlations(
     n=length(idxs)
     # ignore size of given correlation matrix if active==false
     if correlation.active == false
-        return Correlation(zeros(n, n), false)
+        return Correlation(Symmetric(zeros(n, n)), false)
     end
 
-    return Correlation(correlation.matrix[idxs, idxs], correlation.active)
+    return Correlation(Symmetric(correlation.matrix[idxs, idxs]), correlation.active)
 end
 
 function get_correlations(
@@ -198,7 +198,7 @@ function get_correlations(
     idxs::Array{<:Integer, 1}
 )
     n = length(idxs)
-    return Correlation(Matrix{Float64}(I, n, n), correlation.active)
+    return Correlation(Symmetric(Matrix{Float64}(I, n, n)), correlation.active)
 end
 
 
@@ -323,7 +323,7 @@ function get_covariances(m::EFTfitterModel)
     unc_values = [[meas.uncertainties[u] for meas in m.measurements] for u in keys(m.correlations)]
     corrs = [c.matrix for c in m.correlations]
 
-    covs = [σ*ρ*σ for (σ, ρ) in zip(diagm.(unc_values), corrs)]
+    covs = [Symmetric(σ*ρ*σ) for (σ, ρ) in zip(diagm.(unc_values), corrs)]
 end
 
 
