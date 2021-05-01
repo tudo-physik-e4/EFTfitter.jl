@@ -36,7 +36,7 @@ end
         @series begin
             seriestype --> :path
             markerstrokealpha := 0
-            linewidth := 0
+            linewidth --> 1
             markerstrokewidth --> 1
             markersize --> 5
             markerstrokecolor --> :steelblue
