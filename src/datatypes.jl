@@ -11,10 +11,10 @@ export NuisanceCorrelation
 """
     struct Observable
 
-Fields:  
+Fields:
 * `func::Function`: Function returning the predicted value of the observable as a function of the parameters
-* `min::Float64`: Minimum boundary for values of the observable. Defaults to `-Inf`.  
-* `max::Float64`: Maximum boundary for values of the observable. Defaults to `Inf`.  
+* `min::Float64`: Minimum boundary for values of the observable. Defaults to `-Inf`.
+* `max::Float64`: Maximum boundary for values of the observable. Defaults to `Inf`.
 
 Constructors:
 
@@ -28,13 +28,15 @@ Observable(
 """
 struct Observable
     func::Function
+    uncfunc::Function
     min::Float64
     max::Float64
 end
 
-function Observable(f::Function; min=-Inf, max=Inf)
-    Observable(f, min, max)
+function Observable(f::Function, uncf::Function; min=-Inf, max=Inf)
+    Observable(f, uncf, min, max)
 end
+
 
 
 #----- Measurement -----------------------------------------
@@ -43,11 +45,11 @@ abstract type AbstractMeasurement end
 """
     struct Measurement
 
-Fields:  
-* `observable::Observable`: Observable that is measured.  
-* `value::Float64;`: Measured value.   
-* `uncertainties::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}`: Uncertainties of the measurement as NamedTuple.  
-* `active::Bool`: Use or exclude measurement in fit. Defaults to `true`.   
+Fields:
+* `observable::Observable`: Observable that is measured.
+* `value::Float64;`: Measured value.
+* `uncertainties::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}`: Uncertainties of the measurement as NamedTuple.
+* `active::Bool`: Use or exclude measurement in fit. Defaults to `true`.
 
 Constructors:
 ```julia
@@ -99,14 +101,14 @@ end
 """
     struct MeasurementDistribution
 
-Fields:  
+Fields:
     * `observable::Array{Observable, 1}`: Observables that are measured.
     * `value::Array{Float64, 1}`: Measured values.
     * `uncertainties::NamedTuple{<:Any, <:Tuple{Vararg{Array{Float64, 1}}}}`: Uncertainties of the measurement as NamedTuple.
     * `active::Array{Bool, 1}`: Use or exclude bins in fit. Defaults to `true` for all bins.
     * `bin_names::Array{Symbol, 1}`: Suffixes that will be appended to the name of the measurement distribution for the individual bins. Defaults to [_bin1, _bin2, ...].
 
-Constructors:  
+Constructors:
 ```julia
 MeasurementDistribution(
     observable::Array{Observable, 1},
@@ -171,9 +173,9 @@ abstract type AbstractCorrelation end
 """
     struct Correlation
 
-Fields:  
-* `matrix::Array{Float64, 2}`: Observables that are measured.  
-* `active::Bool`: Use this uncertainty category in fit. Defaults to `true`.  
+Fields:
+* `matrix::Array{Float64, 2}`: Observables that are measured.
+* `active::Bool`: Use this uncertainty category in fit. Defaults to `true`.
 
 Constructors:
 ```julia
@@ -198,15 +200,15 @@ end
 """
     struct NuisanceCorrelation
 
-Fields:  
-* `unc_key::Symbol`: Name of uncertainty category.  
-* `meas1::Symbol`: Name of first measurement.  
+Fields:
+* `unc_key::Symbol`: Name of uncertainty category.
+* `meas1::Symbol`: Name of first measurement.
 * `meas2::Symbol`: Name of second measurement.
-* `prior::Distribution`: Prior distribution. Accepts the type `Distribution` and all other 
+* `prior::Distribution`: Prior distribution. Accepts the type `Distribution` and all other
                 types accepted by BAT.NamedTupleDist, e.g. `Interval` or `Real`.
-  
 
-Constructors:  
+
+Constructors:
 ```julia
 NuisanceCorrelation(unc_key::Symbol, meas1::Symbol, meas2::Symbol, prior::Any)
 ```

@@ -8,9 +8,11 @@ struct _NuisanceCorrelation
     key::Symbol # parameter key
 end
 
+
 struct EFTfitterDensity <: AbstractDensity
     measured_values::Vector{Float64}
     observable_functions::Vector{Function}
+    observable_uncfunctions::Vector{Function}
     observable_mins::Vector{Float64}
     observable_maxs::Vector{Float64}
     invcov::Array{Float64, 2}
@@ -32,6 +34,7 @@ function EFTfitterDensity(m::EFTfitterModel)
     n = length(m.measurements)
     measured_values = [meas.value for meas in m.measurements]
     observable_functions = [meas.observable.func for meas in m.measurements]
+    observable_uncfunctions = [meas.observable.uncfunc for meas in m.measurements]
     observable_mins = [meas.observable.min for meas in m.measurements]
     observable_maxs = [meas.observable.max for meas in m.measurements]
 
@@ -45,6 +48,7 @@ function EFTfitterDensity(m::EFTfitterModel)
     return EFTfitterDensity(
             measured_values,
             observable_functions,
+            observable_uncfunctions,
             observable_mins,
             observable_maxs,
             invcov,
@@ -107,11 +111,13 @@ function evaluate_funcs(arr::Vector{Function}, params)
 end
 
 
+
 function BAT.eval_logval_unchecked(
     m::EFTfitterDensity,
     params
 )
     r = evaluate_funcs(m.observable_functions, params)
+    runc = evaluate_funcs(m.observable_uncfunctions, params)
 
     if m.check_bounds
         ib = check_obs_bounds(r, m.observable_mins, m.observable_maxs)
@@ -120,8 +126,10 @@ function BAT.eval_logval_unchecked(
         end
     end
 
-    r = r-m.measured_values
-    r1 = m.invcov*r
+    r = (r-m.measured_values)
+    
+    mcov = inv(m.invcov) + Diagonal(runc.^2)
+    r1 = inv(mcov)*r
     result = -dot(r, r1)
 
     return  0.5*result
@@ -149,6 +157,9 @@ function BAT.eval_logval_unchecked(
 
     return  0.5*result
 end
+
+
+
 
 
 function get_current_invcov(m, params)
