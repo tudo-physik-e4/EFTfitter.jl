@@ -319,7 +319,7 @@ end
 
 
 function get_covariances(m::EFTfitterModel)
-    unc_values = [[meas.uncertainties[u] for meas in m.measurements] for u in keys(m.correlations)]
+    unc_values = [[Float64(meas.uncertainties[u]) for meas in m.measurements] for u in keys(m.correlations)]
     corrs = [c.matrix for c in m.correlations]
 
     covs = [Symmetric(σ*ρ*σ) for (σ, ρ) in zip(diagm.(unc_values), corrs)]
