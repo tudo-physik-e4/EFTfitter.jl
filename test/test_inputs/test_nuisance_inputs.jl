@@ -84,7 +84,7 @@ using BAT
     end
     
     @testset "Test EFTfitterDensity" begin
-        eftfitter_density = PosteriorDensity(model1).likelihood
+        eftfitter_density = PosteriorDensity(model1).likelihood.density
         @test isa(eftfitter_density, EFTfitterDensityNuisance)
         
         @test eftfitter_density.measured_values == [111.1, 333.3, 10, 30]
@@ -113,14 +113,14 @@ using BAT
                                                                                          -0.0202275     0.00125517    9.35082      0.100917;
                                                                                          -0.0187827     0.00116552    0.100917     8.04283] rtol=0.01                                 
         # test evaluation of correct likelihood value at a few points:
-        @test BAT.eval_logval_unchecked(eftfitter_density, (p1=0.0, p2=0.0, ρ1=0)) ≈ -4088.80215 rtol=0.01
-        @test BAT.eval_logval_unchecked(eftfitter_density, (p1=10.0, p2=-30.0, ρ1=0)) ≈ -Inf
-        @test BAT.eval_logval_unchecked(eftfitter_density, (p1=1.5, p2=-0.9, ρ1=0)) ≈ -699198.52 rtol=0.01
-        @test BAT.eval_logval_unchecked(eftfitter_density, (p1=-1.2, p2=-0.8, ρ1=0)) ≈ -438653.692 rtol=0.01
+        @test DensityInterface.logdensityof(eftfitter_density, (p1=0.0, p2=0.0, ρ1=0)) ≈ -4088.80215 rtol=0.01
+        @test DensityInterface.logdensityof(eftfitter_density, (p1=10.0, p2=-30.0, ρ1=0)) ≈ -Inf
+        @test DensityInterface.logdensityof(eftfitter_density, (p1=1.5, p2=-0.9, ρ1=0)) ≈ -699198.52 rtol=0.01
+        @test DensityInterface.logdensityof(eftfitter_density, (p1=-1.2, p2=-0.8, ρ1=0)) ≈ -438653.692 rtol=0.01
         
-        @test BAT.eval_logval_unchecked(eftfitter_density, (p1=0.0, p2=0.0, ρ1=0.1)) ≈ -4091.12445 rtol=0.01
-        @test BAT.eval_logval_unchecked(eftfitter_density, (p1=10.0, p2=-30.0, ρ1=0.2)) ≈ -Inf
-        @test BAT.eval_logval_unchecked(eftfitter_density, (p1=1.5, p2=-0.9, ρ1=0.4)) ≈ -699985.42 rtol=0.01
+        @test DensityInterface.logdensityof(eftfitter_density, (p1=0.0, p2=0.0, ρ1=0.1)) ≈ -4091.12445 rtol=0.01
+        @test DensityInterface.logdensityof(eftfitter_density, (p1=10.0, p2=-30.0, ρ1=0.2)) ≈ -Inf
+        @test DensityInterface.logdensityof(eftfitter_density, (p1=1.5, p2=-0.9, ρ1=0.4)) ≈ -699985.42 rtol=0.01
     end
     
 end

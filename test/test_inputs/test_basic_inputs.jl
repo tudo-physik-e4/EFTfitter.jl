@@ -47,7 +47,7 @@
     end
     
     @testset "Test EFTfitterDensity" begin
-        eftfitter_density = PosteriorDensity(model1).likelihood
+        eftfitter_density = PosteriorDensity(model1).likelihood.density
         @test isa(eftfitter_density, EFTfitterDensity)
         
         @test eftfitter_density.measured_values == [111.1, 333.3]
@@ -58,10 +58,10 @@
         @test eftfitter_density.check_bounds == true
     
         # test evaluation of correct likelihood value at a few points:
-        @test BAT.eval_logval_unchecked(eftfitter_density, (p1=0.0, p2=0.0)) ≈ -45.07398 rtol=0.01
-        @test BAT.eval_logval_unchecked(eftfitter_density, (p1=10.0, p2=-30.0)) ≈ -Inf
-        @test BAT.eval_logval_unchecked(eftfitter_density, (p1=1.5, p2=-0.9)) ≈ -68.6575 rtol=0.01
-        @test BAT.eval_logval_unchecked(eftfitter_density, (p1=-1.2, p2=-0.8)) ≈ -37.1857 rtol=0.01
+        @test DensityInterface.logdensityof(eftfitter_density, (p1=0.0, p2=0.0)) ≈ -45.07398 rtol=0.01
+        @test DensityInterface.logdensityof(eftfitter_density, (p1=10.0, p2=-30.0)) ≈ -Inf
+        @test DensityInterface.logdensityof(eftfitter_density, (p1=1.5, p2=-0.9)) ≈ -68.6575 rtol=0.01
+        @test DensityInterface.logdensityof(eftfitter_density, (p1=-1.2, p2=-0.8)) ≈ -37.1857 rtol=0.01
     end
     
 end

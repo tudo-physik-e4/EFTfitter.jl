@@ -3,6 +3,7 @@ using EFTfitter
 using BAT
 using Distributions
 using IntervalSets
+using DensityInterface
 
 Test.@testset "Package EFTfitter" begin
     include("test_datatypes.jl")
