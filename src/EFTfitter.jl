@@ -12,6 +12,8 @@ using Parameters
 using RecipesBase
 using Requires
 using ValueShapes
+using DensityInterface
+import DensityInterface: logdensityof
 
 include("datatypes.jl")
 include("EFTfitterModel.jl")

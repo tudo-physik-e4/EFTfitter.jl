@@ -106,8 +106,7 @@ function evaluate_funcs(arr::Vector{Function}, params)
     return [arr[i](params) for i in 1:length(arr)]
 end
 
-
-function BAT.eval_logval_unchecked(
+function DensityInterface.logdensityof(
     m::EFTfitterDensity,
     params
 )
@@ -127,8 +126,7 @@ function BAT.eval_logval_unchecked(
     return  0.5*result
 end
 
-
-function BAT.eval_logval_unchecked(
+function DensityInterface.logdensityof(
     m::EFTfitterDensityNuisance,
     params
 )
@@ -169,9 +167,9 @@ end
 function BAT.PosteriorDensity(m::EFTfitterModel)
     if has_nuisance_correlations(m)
         likelihood = EFTfitterDensityNuisance(m)
-        return posterior = PosteriorDensity(likelihood, m.parameters)
+        return posterior = BAT.PosteriorDensity(likelihood, m.parameters)
     else
         likelihood = EFTfitterDensity(m)
-        return posterior = PosteriorDensity(likelihood, m.parameters)
+        return posterior = BAT.PosteriorDensity(likelihood, m.parameters)
     end
 end
