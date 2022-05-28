@@ -1,8 +1,5 @@
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.7.2"
-manifest_format = "2.0"
-
 [[deps.AbstractFFTs]]
 deps = ["ChainRulesCore", "LinearAlgebra"]
 git-tree-sha1 = "6f1d9bc1c08f9f4a8fa92e3ea3cb50153a1b40d4"
