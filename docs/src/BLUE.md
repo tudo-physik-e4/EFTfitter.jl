@@ -67,7 +67,7 @@ construct an `EFTfitterModel`:
 
 ```julia
 model = EFTfitterModel(parameters, measurements, correlations)
-posterior = PosteriorDensity(model);
+posterior = PosteriorMeasure(model);
 ```
 
 sample the posterior with BAT.jl:

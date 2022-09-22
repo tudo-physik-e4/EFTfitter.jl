@@ -8,7 +8,7 @@ struct _NuisanceCorrelation
     key::Symbol # parameter key
 end
 
-struct EFTfitterDensity <: AbstractDensity
+struct EFTfitterDensity
     measured_values::Vector{Float64}
     observable_functions::Vector{Function}
     observable_mins::Vector{Float64}
@@ -16,8 +16,9 @@ struct EFTfitterDensity <: AbstractDensity
     invcov::Array{Float64, 2}
     check_bounds::Bool
 end
+@inline DensityInterface.DensityKind(::EFTfitterDensity) = IsDensity()
 
-struct EFTfitterDensityNuisance <: AbstractDensity
+struct EFTfitterDensityNuisance
     measured_values::Vector{Float64}
     observable_functions::Vector{Function}
     observable_mins::Vector{Float64}
@@ -26,6 +27,7 @@ struct EFTfitterDensityNuisance <: AbstractDensity
     nuisances::Vector{_NuisanceCorrelation}
     check_bounds::Bool
 end
+@inline DensityInterface.DensityKind(::EFTfitterDensityNuisance) = IsDensity()
 
 
 function EFTfitterDensity(m::EFTfitterModel)
@@ -164,12 +166,12 @@ end
 
 
 
-function BAT.PosteriorDensity(m::EFTfitterModel)
+function BAT.PosteriorMeasure(m::EFTfitterModel)
     if has_nuisance_correlations(m)
         likelihood = EFTfitterDensityNuisance(m)
-        return posterior = BAT.PosteriorDensity(likelihood, m.parameters)
+        return posterior = BAT.PosteriorMeasure(likelihood, m.parameters)
     else
         likelihood = EFTfitterDensity(m)
-        return posterior = BAT.PosteriorDensity(likelihood, m.parameters)
+        return posterior = BAT.PosteriorMeasure(likelihood, m.parameters)
     end
 end

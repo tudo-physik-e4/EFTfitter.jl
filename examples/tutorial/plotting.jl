@@ -11,7 +11,7 @@ using Plots
 include("tutorial_inputs.jl")
 model = EFTfitterModel(parameters, measurements, correlations)
 
-posterior = PosteriorDensity(model)
+posterior = PosteriorMeasure(model)
 algorithm = MCMCSampling(mcalg = MetropolisHastings(), nsteps = 10^5, nchains = 4)
 samples = bat_sample(posterior, algorithm).result;
 

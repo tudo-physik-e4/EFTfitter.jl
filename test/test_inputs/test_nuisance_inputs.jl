@@ -84,7 +84,7 @@ using BAT
     end
     
     @testset "Test EFTfitterDensity" begin
-        eftfitter_density = PosteriorDensity(model1).likelihood.density
+        eftfitter_density = PosteriorMeasure(model1).likelihood.density._d
         @test isa(eftfitter_density, EFTfitterDensityNuisance)
         
         @test eftfitter_density.measured_values == [111.1, 333.3, 10, 30]

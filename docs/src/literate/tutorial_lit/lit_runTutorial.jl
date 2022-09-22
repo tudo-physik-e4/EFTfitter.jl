@@ -38,7 +38,7 @@ model = EFTfitterModel(parameters, measurements, correlations)
 
 #~To sample the posterior distribution, we specify that our `EFTfitterModel` 
 #~should be used and then setup BAT.jl to sample the EFTfitter likelihood. 
-posterior = PosteriorDensity(model)
+posterior = PosteriorMeasure(model)
 
 algorithm = MCMCSampling(mcalg = MetropolisHastings(), nsteps = 10^5, nchains = 4)
 samples = bat_sample(posterior, algorithm).result;

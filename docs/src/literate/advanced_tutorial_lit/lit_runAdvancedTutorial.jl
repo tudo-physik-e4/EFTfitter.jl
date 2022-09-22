@@ -29,7 +29,7 @@
 #~We need to modify the definition of the `EFTfitterModel` by also passing the `nuisance_correlations`:
 model = EFTfitterModel(parameters, measurements, correlations, nuisance_correlations)
 
-#!md posterior = PosteriorDensity(model)
+#!md posterior = PosteriorMeasure(model)
 #!md 
 #!md algorithm = MCMCSampling(mcalg = MetropolisHastings(), nsteps = 10^5, nchains = 4)
 #!md samples = bat_sample(posterior, algorithm).result;

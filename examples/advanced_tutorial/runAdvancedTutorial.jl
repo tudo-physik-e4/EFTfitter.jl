@@ -12,7 +12,7 @@ include("advanced_inputs.jl")
 # We need to modify the definition of the `EFTfitterModel` by also passing the `nuisance_correlations`:
 model = EFTfitterModel(parameters, measurements, correlations, nuisance_correlations)
 
-posterior = PosteriorDensity(model)
+posterior = PosteriorMeasure(model)
 
 algorithm = MCMCSampling(mcalg = MetropolisHastings(), nsteps = 10^5, nchains = 4)
 samples = bat_sample(posterior, algorithm).result;

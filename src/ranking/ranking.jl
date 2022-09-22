@@ -252,7 +252,7 @@ function criterion_value(
     model::EFTfitterModel;
     sampling_algorithm::BAT.AbstractSamplingAlgorithm=MCMCSampling()
 )
-    posterior = PosteriorDensity(EFTfitterDensity(model), model.parameters)
+    posterior = PosteriorMeasure(EFTfitterDensity(model), model.parameters)
     samples = BAT.bat_sample(posterior, sampling_algorithm).result
     criterion_value = apply_criterion(criterion, samples)
 end
