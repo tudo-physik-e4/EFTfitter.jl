@@ -51,6 +51,8 @@ jobs:
         with:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
+      - name: Install dependencies
+        run: julia --project=. -e 'using Pkg; pkg"add BAT#main"; Pkg.instantiate()'
       - name: Cache artifacts
         uses: actions/cache@v2
         env:
