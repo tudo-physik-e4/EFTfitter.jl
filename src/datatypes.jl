@@ -164,6 +164,28 @@ function MeasurementDistribution(
     MeasurementDistribution(obs, vals, unc, active, bin_names)
 end
 
+#----- Limits -----------------------------------------
+abstract type AbstractLimit end
+
+struct GaussianUpperLimit <: AbstractLimit
+    observable::Observable
+    best_fit::Float64
+    limit::Float64
+    cl::Float64
+    active::Bool
+end
+
+function GaussianUpperLimit(
+    observable::Function,
+    best_fit::Float64,
+    limit::Float64,
+    cl::Float64;
+    active::Bool = true
+)
+    GaussianUpperLimit(Observable(observable), best_fit, limit, cl, active)
+end
+
+export GaussianUpperLimit
 
 #----- Correlation -----------------------------------------
 abstract type AbstractCorrelation end

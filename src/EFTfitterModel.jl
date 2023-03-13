@@ -72,6 +72,47 @@ function EFTfitterModel(
 
     return EFTfitterModel(params, measurement_nt, meas_dists_nt, correlation_nt, nuisances_nt)
 end
+
+#---------------------------------------------
+struct EFTfitterModelWithLimits
+    parameters::BAT.NamedTupleDist
+    measurements::NamedTuple{<:Any, <:Tuple{Vararg{Measurement}}}
+    measurementdistributions::NamedTuple{<:Any, <:Tuple{Vararg{MeasurementDistribution}}}
+    correlations::NamedTuple{<:Any, <:Tuple{Vararg{Correlation}}}
+    limits::NamedTuple{<:Any, <:Tuple{Vararg{AbstractLimit}}}
+    nuisances::Union{NamedTuple{<:Any, <:Tuple{Vararg{NuisanceCorrelation}}}, Nothing}
+end
+export EFTfitterModelWithLimits
+
+function EFTfitterModelWithLimits(
+    parameters::BAT.NamedTupleDist,
+    measurements::NamedTuple{<:Any, <:Tuple{Vararg{AbstractMeasurement}}},
+    correlations::NamedTuple{<:Any, <:Tuple{Vararg{AbstractCorrelation}}},
+    limits::Any,#NamedTuple{<:Any, <:Tuple{Vararg{AbstractLimit}}},
+    nuisances::Union{NamedTuple{<:Any, <:Tuple{Vararg{NuisanceCorrelation}}}, Nothing} = nothing
+)   
+    println("HIII")
+    measurement_vec, measurement_keys = unpack(measurements)
+    correlation_vec, uncertainty_keys = unpack(correlations)
+
+    # convert elements of MeasurementDistribution to Measurement for each bin
+    binned_measurements, binned_measurement_keys = convert_to_bins(measurement_vec, measurement_keys)
+    # use only active measurements/bins
+    active_measurements, active_measurement_keys, corrs = only_active_measurements(binned_measurements, binned_measurement_keys, correlation_vec)
+    # use only active uncertainties and correlations
+    active_measurements, active_correlations, uncertainty_keys = only_active_uncertainties(active_measurements, corrs, uncertainty_keys)
+
+    correlation_nt = namedtuple(uncertainty_keys, active_correlations)
+    measurement_nt = namedtuple(active_measurement_keys, active_measurements)
+    meas_dists_nt  = create_distributions(measurements, uncertainty_keys)
+    nuisances_nt   = only_active_nuisances(nuisances, active_measurement_keys, uncertainty_keys)
+    
+    params = add_nuisance_parameters(parameters, nuisances_nt)
+
+    return EFTfitterModelWithLimits(params, measurement_nt, meas_dists_nt, correlation_nt, limits, nuisances_nt)
+end
+
+
 #=============================================================#
 """
     get_parameters(m::EFTfitterModel)
@@ -310,7 +351,7 @@ end
 
 
 
-function get_total_covariance(m::EFTfitterModel)
+function get_total_covariance(m::Union{EFTfitterModel,EFTfitterModelWithLimits})
     covs = get_covariances(m)
     total_cov = Symmetric(sum(covs))
 
@@ -318,7 +359,7 @@ function get_total_covariance(m::EFTfitterModel)
 end
 
 
-function get_covariances(m::EFTfitterModel)
+function get_covariances(m::Union{EFTfitterModel,EFTfitterModelWithLimits} )
     unc_values = [[Float64(meas.uncertainties[u]) for meas in m.measurements] for u in keys(m.correlations)]
     corrs = [c.matrix for c in m.correlations]
 
