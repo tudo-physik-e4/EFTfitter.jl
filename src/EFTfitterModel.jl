@@ -41,76 +41,44 @@ model = EFTfitterModel(parameters, measurements, correlations, nuisances) # with
 struct EFTfitterModel
     parameters::BAT.NamedTupleDist
     measurements::NamedTuple{<:Any, <:Tuple{Vararg{Measurement}}}
-    measurementdistributions::NamedTuple{<:Any, <:Tuple{Vararg{MeasurementDistribution}}}
+    measured_distributions::NamedTuple{<:Any, <:Tuple{Vararg{MeasurementDistribution}}}
+    limits::Union{NamedTuple{<:Any, <:Tuple{Vararg{AbstractLimit}}}, Nothing}
     correlations::NamedTuple{<:Any, <:Tuple{Vararg{Correlation}}}
     nuisances::Union{NamedTuple{<:Any, <:Tuple{Vararg{NuisanceCorrelation}}}, Nothing}
+    CovarianceType::Union{Type, Function}
 end
 
 
 function EFTfitterModel(
     parameters::BAT.NamedTupleDist,
     measurements::NamedTuple{<:Any, <:Tuple{Vararg{AbstractMeasurement}}},
-    correlations::NamedTuple{<:Any, <:Tuple{Vararg{AbstractCorrelation}}},
-    nuisances::Union{NamedTuple{<:Any, <:Tuple{Vararg{NuisanceCorrelation}}}, Nothing} = nothing
+    correlations::NamedTuple{<:Any, <:Tuple{Vararg{AbstractCorrelation}}};
+    limits::Union{NamedTuple{<:Any, <:Tuple{Vararg{AbstractLimit}}}, Nothing} = nothing,
+    nuisances::Union{NamedTuple{<:Any, <:Tuple{Vararg{NuisanceCorrelation}}}, Nothing} = nothing,
+    CovarianceType::Union{Type, Function} = Matrix{Float64}
 )
     measurement_vec, measurement_keys = unpack(measurements)
     correlation_vec, uncertainty_keys = unpack(correlations)
 
     # convert elements of MeasurementDistribution to Measurement for each bin
     binned_measurements, binned_measurement_keys = convert_to_bins(measurement_vec, measurement_keys)
-    # use only active measurements/bins
-    active_measurements, active_measurement_keys, corrs = only_active_measurements(binned_measurements, binned_measurement_keys, correlation_vec)
-    # use only active uncertainties and correlations
-    active_measurements, active_correlations, uncertainty_keys = only_active_uncertainties(active_measurements, corrs, uncertainty_keys)
 
-    correlation_nt = namedtuple(uncertainty_keys, active_correlations)
+    active_measurements, active_measurement_keys, all_correlations = only_active_measurements(binned_measurements, binned_measurement_keys, correlation_vec)
+    active_measurements, active_correlations, active_uncertainty_keys = only_active_uncertainties(active_measurements, all_correlations, uncertainty_keys)
+    active_limits_nt = only_active_limits(limits)
+ 
+    correlation_nt = namedtuple(active_uncertainty_keys, active_correlations)
     measurement_nt = namedtuple(active_measurement_keys, active_measurements)
-    meas_dists_nt  = create_distributions(measurements, uncertainty_keys)
-    nuisances_nt   = only_active_nuisances(nuisances, active_measurement_keys, uncertainty_keys)
+
+    meas_dists_nt  = create_distributions(measurements, active_uncertainty_keys)
+    nuisances_nt   = only_active_nuisances(nuisances, active_measurement_keys, active_uncertainty_keys)
     
     params = add_nuisance_parameters(parameters, nuisances_nt)
 
-    return EFTfitterModel(params, measurement_nt, meas_dists_nt, correlation_nt, nuisances_nt)
+    return EFTfitterModel(params, measurement_nt, meas_dists_nt, active_limits_nt, correlation_nt, nuisances_nt, CovarianceType)
 end
 
-#---------------------------------------------
-struct EFTfitterModelWithLimits
-    parameters::BAT.NamedTupleDist
-    measurements::NamedTuple{<:Any, <:Tuple{Vararg{Measurement}}}
-    measurementdistributions::NamedTuple{<:Any, <:Tuple{Vararg{MeasurementDistribution}}}
-    correlations::NamedTuple{<:Any, <:Tuple{Vararg{Correlation}}}
-    limits::NamedTuple{<:Any, <:Tuple{Vararg{AbstractLimit}}}
-    nuisances::Union{NamedTuple{<:Any, <:Tuple{Vararg{NuisanceCorrelation}}}, Nothing}
-end
-export EFTfitterModelWithLimits
 
-function EFTfitterModelWithLimits(
-    parameters::BAT.NamedTupleDist,
-    measurements::NamedTuple{<:Any, <:Tuple{Vararg{AbstractMeasurement}}},
-    correlations::NamedTuple{<:Any, <:Tuple{Vararg{AbstractCorrelation}}},
-    limits::Any,#NamedTuple{<:Any, <:Tuple{Vararg{AbstractLimit}}},
-    nuisances::Union{NamedTuple{<:Any, <:Tuple{Vararg{NuisanceCorrelation}}}, Nothing} = nothing
-)   
-    println("HIII")
-    measurement_vec, measurement_keys = unpack(measurements)
-    correlation_vec, uncertainty_keys = unpack(correlations)
-
-    # convert elements of MeasurementDistribution to Measurement for each bin
-    binned_measurements, binned_measurement_keys = convert_to_bins(measurement_vec, measurement_keys)
-    # use only active measurements/bins
-    active_measurements, active_measurement_keys, corrs = only_active_measurements(binned_measurements, binned_measurement_keys, correlation_vec)
-    # use only active uncertainties and correlations
-    active_measurements, active_correlations, uncertainty_keys = only_active_uncertainties(active_measurements, corrs, uncertainty_keys)
-
-    correlation_nt = namedtuple(uncertainty_keys, active_correlations)
-    measurement_nt = namedtuple(active_measurement_keys, active_measurements)
-    meas_dists_nt  = create_distributions(measurements, uncertainty_keys)
-    nuisances_nt   = only_active_nuisances(nuisances, active_measurement_keys, uncertainty_keys)
-    
-    params = add_nuisance_parameters(parameters, nuisances_nt)
-
-    return EFTfitterModelWithLimits(params, measurement_nt, meas_dists_nt, correlation_nt, limits, nuisances_nt)
-end
 
 
 #=============================================================#
@@ -162,8 +130,8 @@ Note: The upper and lower limits are ignored and for each unique `Function`s onl
 """
 function  get_observables(model::EFTfitterModel)
     meas = get_measurements(model)
-    obs = unique(Observable.([m.observable.func for m in values(meas)]))
-    obs_names = [string(o.func) for o in obs]
+    obs = unique(Observable.([m.observable.prediction for m in NamedTupleTools.values(meas)]))
+    obs_names = [string(o.prediction) for o in obs]
     observables_nt = namedtuple(obs_names, obs)
 end
 
@@ -219,6 +187,23 @@ function only_active_measurements(
 
     return measurements, measurement_keys, corrs
 end
+
+
+function only_active_limits(
+    limits::NamedTuple{<:Any, <:Tuple{Vararg{AbstractLimit}}}
+)
+    limit_values, limit_keys = unpack(limits)
+    active_idxs = filter(x->limit_values[x].active, eachindex(limit_values))
+    
+    limit_values = limit_values[active_idxs]
+    limit_keys = limit_keys[active_idxs]
+
+    return namedtuple(limit_keys, limit_values)
+end
+
+only_active_limits(limits::Nothing) = nothing
+
+
 
 #TODO: rename?
 function get_correlations(
@@ -350,21 +335,30 @@ function check_nuisance(
 end
 
 
+#TODO: add functions to return covariance with CovarianceType
 
-function get_total_covariance(m::Union{EFTfitterModel,EFTfitterModelWithLimits})
+function get_total_covariance(m::EFTfitterModel)
     covs = get_covariances(m)
-    total_cov = Symmetric(sum(covs))
-
+    total_cov = sum(covs)
+    
     return total_cov
 end
 
-
-function get_covariances(m::Union{EFTfitterModel,EFTfitterModelWithLimits} )
+function get_covariances(m::EFTfitterModel)
     unc_values = [[Float64(meas.uncertainties[u]) for meas in m.measurements] for u in keys(m.correlations)]
     corrs = [c.matrix for c in m.correlations]
 
-    covs = [Symmetric(σ*ρ*σ) for (σ, ρ) in zip(diagm.(unc_values), corrs)]
+    # symmetrize the matrix
+    return covs = [Matrix(Symmetric(σ*ρ*σ)) for (σ, ρ) in zip(diagm.(unc_values), corrs)]
 end
+
+# function get_covariances(m::EFTfitterModel)
+#     unc_values = [[Float64(meas.uncertainties[u]) for meas in m.measurements] for u in keys(m.correlations)]
+#     corrs = [c.matrix for c in m.correlations]
+
+#     # symmetrize the matrix and use the CovarianceType
+#     return covs = [m.CovarianceType(Matrix(Symmetric(σ*ρ*σ))) for (σ, ρ) in zip(diagm.(unc_values), corrs)]
+# end
 
 
 
@@ -480,3 +474,7 @@ function keys_of_bins(
     keys = reduce(vcat, keys_of_bins.(measurements, measurement_keys))
     return keys
 end
+
+
+
+

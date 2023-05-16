@@ -12,28 +12,31 @@ export NuisanceCorrelation
     struct Observable
 
 Fields:  
-* `func::Function`: Function returning the predicted value of the observable as a function of the parameters
-* `min::Float64`: Minimum boundary for values of the observable. Defaults to `-Inf`.  
-* `max::Float64`: Maximum boundary for values of the observable. Defaults to `Inf`.  
+* `prediction::Function`: Function returning the predicted value of the observable as a function of the parameters.
+* `min::Real`: Minimum boundary for values of the observable. Defaults to `-Inf`.  
+* `max::Real`: Maximum boundary for values of the observable. Defaults to `Inf`.  
+* `weight::Real`: Weight of this observable in the combination. Defaults to `1.0`.  
 
 Constructors:
 
 ```julia
 Observable(
-    func::Function;
-    min::Float64 = -Inf
-    max::Float64 = Inf
+    prediction::Function
+    min::Real = -Inf
+    max::Real = Inf
+    weight::Real = 1.0
 )
 ```
 """
-struct Observable
-    func::Function
-    min::Float64
-    max::Float64
+@with_kw struct Observable
+    prediction::Function
+    min::Real = -Inf
+    max::Real = Inf
+    weight::Real = 1.0
 end
 
-function Observable(f::Function; min=-Inf, max=Inf)
-    Observable(f, min, max)
+function Observable(prediction::Function; min=-Inf, max=Inf, weight=1.0)
+    Observable(prediction=prediction, min=min, max=max, weight=weight)
 end
 
 
@@ -45,7 +48,7 @@ abstract type AbstractMeasurement end
 
 Fields:  
 * `observable::Observable`: Observable that is measured.  
-* `value::Float64;`: Measured value.   
+* `value::Real;`: Measured value.   
 * `uncertainties::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}`: Uncertainties of the measurement as NamedTuple.  
 * `active::Bool`: Use or exclude measurement in fit. Defaults to `true`.   
 
@@ -53,7 +56,7 @@ Constructors:
 ```julia
 Measurement(
     observable::Observable,
-    value::Float64;
+    value::Real;
     uncertainties::NamedTuple{<:Any, <:Tuple{Vararg{Real}}},
     active::Bool = true
 )
@@ -62,7 +65,7 @@ Measurement(
 ```julia
 Measurement(
     observable::Function,
-    value::Float64;
+    value::Real;
     uncertainties::NamedTuple{<:Any, <:Tuple{Vararg{Real}}},
     active::Bool = true
 )
@@ -70,8 +73,8 @@ Measurement(
 """
 struct Measurement <: AbstractMeasurement
     observable::Observable
-    value::Float64
-    uncertainties::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}
+    value::Real
+    uncertainties::NamedTuple{<:Any, <:Tuple{Vararg{Real}}} 
     active::Bool
 end
 
@@ -84,6 +87,7 @@ function Measurement(
     Measurement(observable, value, uncertainties, active)
 end
 
+# Short-hand constructor that converts a function to an Observable object
 function Measurement(
     observable::Function,
     value::Real;
@@ -101,7 +105,7 @@ end
 
 Fields:  
     * `observable::Array{Observable, 1}`: Observables that are measured.
-    * `value::Array{Float64, 1}`: Measured values.
+    * `values::Array{Float64, 1}`: Measured values.
     * `uncertainties::NamedTuple{<:Any, <:Tuple{Vararg{Array{Float64, 1}}}}`: Uncertainties of the measurement as NamedTuple.
     * `active::Array{Bool, 1}`: Use or exclude bins in fit. Defaults to `true` for all bins.
     * `bin_names::Array{Symbol, 1}`: Suffixes that will be appended to the name of the measurement distribution for the individual bins. Defaults to [_bin1, _bin2, ...].
@@ -110,7 +114,7 @@ Constructors:
 ```julia
 MeasurementDistribution(
     observable::Array{Observable, 1},
-    vals::Array{<:Real, 1};
+    values::Array{<:Real, 1};
     uncertainties::NamedTuple{<:Any, <:Tuple{Vararg{Union{Vector{Float64}, Vector{Int64}}}}},
     active::Union{Bool, Array{Bool, 1}} = [true for i in 1:length(vals)],
     bin_names::Array{Symbol, 1} = [Symbol("bin\$i") for i in 1:length(vals)]
@@ -120,7 +124,7 @@ MeasurementDistribution(
 ```julia
 MeasurementDistribution(
     observable::Array{Function, 1},
-    vals::Array{<:Real, 1};
+    values::Array{<:Real, 1};
     uncertainties::NamedTuple{<:Any, <:Tuple{Vararg{Union{Vector{Float64}, Vector{Int64}}}}},
     active::Union{Bool, Array{Bool, 1}} = [true for i in 1:length(vals)],
     bin_names::Array{Symbol, 1}
@@ -135,36 +139,36 @@ struct MeasurementDistribution <: AbstractMeasurement
     bin_names::Array{Symbol, 1}
 end
 
-# constructor with default value active=true
+# constructor with default value active=true and names "bin1", ...
 function MeasurementDistribution(
-    observable::Array{Observable, 1},
-    vals::Array{<:Real, 1};
-    uncertainties::NamedTuple{<:Any, <:Tuple{Vararg{Union{Vector{Float64}, Vector{Int64}}}}},
-    active::Union{Bool, Array{Bool, 1}} = [true for i in 1:length(vals)],
-    bin_names::Array{Symbol, 1} = [Symbol("bin$i") for i in 1:length(vals)]
+    observables::Array{Observable, 1},
+    value::Array{<:Real, 1};
+    uncertainties::NamedTuple{<:Any, <:Tuple{Vararg{Vector{<:Real}}}},
+    active::Union{Bool, Array{Bool, 1}} = [true for i in eachindex(value)],
+    bin_names::Array{Symbol, 1} = [Symbol("bin$i") for i in eachindex(value)]
 )
-    isa(active, Bool) ? active = fill(active, length(vals)) : nothing
-    unc = namedtuple(keys(uncertainties), float.(values(uncertainties)))
+    isa(active, Bool) ? active = fill(active, length(value)) : nothing
+    unc = namedtuple(keys(uncertainties), float.(NamedTupleTools.values(uncertainties)))
 
-    MeasurementDistribution(observable, vals, unc, active, bin_names)
+    MeasurementDistribution(observables, value, unc, active, bin_names)
 end
 
-# constructor with default value active=true
+# constructor converting Function to Observable with default value active=true and names "bin1", ...
 function MeasurementDistribution(
-    observable::Array{Function, 1},
-    vals::Array{<:Real, 1};
-    uncertainties::NamedTuple{<:Any, <:Tuple{Vararg{Union{Vector{Float64}, Vector{Int64}}}}},
-    active::Union{Bool, Array{Bool, 1}} = [true for i in 1:length(vals)],
-    bin_names::Array{Symbol, 1} = [Symbol("bin$i") for i in 1:length(vals)]
+    observables::Array{Function, 1},
+    value::Array{<:Real, 1};
+    uncertainties::NamedTuple{<:Any, <:Tuple{Vararg{Vector{<:Real}}}},
+    active::Union{Bool, Array{Bool, 1}} = [true for i in eachindex(value)],
+    bin_names::Array{Symbol, 1} = [Symbol("bin$i") for i in eachindex(value)]
 )
-    obs = Observable.(observable)
-    isa(active, Bool) ? active = fill(active, length(vals)) : nothing
-    unc = namedtuple(keys(uncertainties), float.(values(uncertainties)))
+    obs = Observable.(observables)
+    isa(active, Bool) ? active = fill(active, length(value)) : nothing
+    unc = namedtuple(keys(uncertainties), float.(NamedTupleTools.values(uncertainties)))
 
-    MeasurementDistribution(obs, vals, unc, active, bin_names)
+    MeasurementDistribution(obs, value, unc, active, bin_names)
 end
 
-#----- Limits -----------------------------------------
+#----- TODO: Limits -----------------------------------------
 abstract type AbstractLimit end
 
 struct GaussianUpperLimit <: AbstractLimit
@@ -202,14 +206,14 @@ Constructors:
 Correlation(matrix::Array{<:Real, 2}; active::Bool = true)
 ```
 """
-struct Correlation <: AbstractCorrelation
-    matrix::Symmetric{Float64,Array{Float64,2}}
+struct Correlation{M} <: AbstractCorrelation
+    matrix::M #Symmetric{Float64,Array{Float64,2}}
     active::Bool
 end
 
-function Correlation(matrix::Array{<:Real, 2}; active::Bool = true)
-    symmatrix = Symmetric(matrix)
-    Correlation(symmatrix, active)
+function Correlation(matrix::Array{<:Real, 2}; active::Bool = true, MatrixType = Symmetric)
+    new_matrix = MatrixType(matrix)
+    Correlation(new_matrix, active)
 end
 
 @with_kw struct NoCorrelation <: AbstractCorrelation
@@ -244,3 +248,10 @@ function NuisanceCorrelation(unc_key::Symbol, meas1::Symbol, meas2::Symbol, prio
     dist, shape = ValueShapes._ntd_dist_and_shape(prior)
     return NuisanceCorrelation(unc_key, meas1, meas2, dist)
 end
+
+
+
+m = rand(5,5)
+
+m2 = Matrix(Symmetric(m))
+typeof(m2)

@@ -68,6 +68,55 @@ function BLUE(m::EFTfitterModel)
 end
 
 function all_observables_equal(model::EFTfitterModel)
-    observable_functions = [m.observable.func for m in values(model.measurements)]
+    observable_functions = [m.observable.prediction for m in values(model.measurements)]
     all(y->y==observable_functions[1], observable_functions)
+end
+
+
+
+
+function run_logdensity(posterior, vs)
+    [logdensityof(posterior)(v) for v in vs]
+end
+
+
+export run_speed_test
+function run_speed_test(
+    m::EFTfitterModel; 
+    typs= [Matrix, sparse, Symmetric], 
+    vs = rand(m.parameters, 10), 
+    verbose=true
+)
+    @info "Running speed comparisons to find optimal data type for (inverse) covariance matrix!"
+
+    benchmarks = []
+    covtyps = [] 
+
+    for t in typs
+        current_model = @set m.CovarianceType = t;
+        posterior = PosteriorMeasure(current_model) 
+
+        current_invcov_type = typeof(posterior.likelihood.density._d.invcov)
+        push!(covtyps, current_invcov_type)
+
+        verbose ? (@info "Testing type: $(current_invcov_type)") : nothing
+
+        b = @benchmark run_logdensity($posterior, $vs)
+        push!(benchmarks, b)
+
+        verbose ? display(b) : nothing
+    end
+
+    median_times = median.([b.times for b in benchmarks])
+    sorted_idxs = sortperm(median_times)
+    allocations = [benchmarks[i].allocs for i in sorted_idxs]
+    memory = [benchmarks[i].memory for i in sorted_idxs]
+
+    tbl = Table(Type=covtyps[sorted_idxs], MedianTime=median_times[sorted_idxs], Allocations=allocations, Memory=memory)
+
+    verbose ? display(tbl) : nothing
+    
+    @info "Recommended type for (inverse) covariance matrix: $(tbl.Type[1])"
+
+    return tbl, benchmarks
 end

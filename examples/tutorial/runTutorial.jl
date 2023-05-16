@@ -19,14 +19,28 @@ include("tutorial_inputs.jl")
 
 # We can then build the `EFTfitterModel` which combines all our inputs into
 # one object that is then used to perform the analysis on.
-model = EFTfitterModel(parameters, measurements, correlations)
+
+using SparseArrays
+using LinearAlgebra
+f(x) = Symmetric(sparse(x))
+
+model = EFTfitterModel(parameters, measurements, correlations, CovarianceType=f)
+get_total_covariance(model)
+run_speed_test(model)
 
 # To sample the posterior distribution, we specify that our `EFTfitterModel`
 # should be used and then setup BAT.jl to sample the EFTfitter likelihood.
 posterior = PosteriorMeasure(model)
+posterior.likelihood.density._d.observable_mins
 
+using DensityInterface
+v=rand(parameters)
+@btime logdensityof(posterior)(v)
 algorithm = MCMCSampling(mcalg = MetropolisHastings(), nsteps = 10^5, nchains = 4)
 samples = bat_sample(posterior, algorithm).result;
+
+samples.v
+@btime samples.v.C1
 # For further information on settings & algorithms when sampling with BAT.jl
 # see the BAT.jl [tutorial](https://bat.github.io/BAT.jl/dev/tutorial/#Parameter-Space-Exploration-via-MCMC)
 # and [documentation](https://bat.github.io/BAT.jl/dev/stable_api/#BAT.bat_sample).
@@ -64,3 +78,220 @@ savefig(p, "plot_1d.pdf")
 
 # This file was generated using Literate.jl, https://github.com/fredrikekre/Literate.jl
 
+struct ResultT
+    a::Float64
+    b::Float64
+end
+
+ResultT(a::Float64) = ResultT(a, 0.)
+
+ResultT(a::Tuple) = ResultT(a[1], a[2])
+
+function myf()
+    return 1.
+end 
+function myf(a)
+    return 1.
+end 
+
+function myf2()
+    return 1., 2.
+end
+
+function myf2(a)
+    return 1., 2.
+end
+
+function myf3()
+    return ResultT(1., 2.)
+end
+
+function evalfs(fs)
+    return [f(3) for f in fs]
+end
+        
+preds = zeros(5)
+uncs = zeros(5)
+
+function evalfs2(fs, preds=preds, uncs=uncs)
+    for i in eachindex(fs)
+        p, u = fs[i]()
+        preds[i] = p
+        uncs[i] = u
+    end
+    return preds, uncs
+end
+
+
+function evalfs2e(fs, preds::Vector{Float64}=preds, uncs::Vector{Float64}=uncs)
+    for i in eachindex(fs)
+        #println(fs[i]())
+        r = ResultT((1.,2.))#fs[i]())
+        #println(r)
+        preds[i] = r.a
+        uncs[i] = r.b
+    end
+
+    return preds, uncs
+end
+
+function evalfs3(fs, preds=preds, uncs=uncs)
+    for i in eachindex(fs)
+        r = fs[i](5)
+        preds[i] = r[1]
+        uncs[i] = r[2]
+    end
+    return preds, uncs
+end
+
+function ff(f::Function)
+    return x->(f(x), 0.)
+end
+
+
+g = x -> (myf(x), 0.)
+
+g(5)
+
+
+@btime a = evalfs([myf, myf, myf, myf2, myf2])
+
+@btime a = evalfs3([ff(myf), ff(myf), myf2, myf2, myf2])
+
+@btime c = evalfs2([myf2, myf2, myf2, myf2, myf2])
+
+@btime c = evalfs3([myf3, myf3, myf3, myf3, myf3])
+
+
+@profview [evalfs2b([myf2, myf2, myf2, myf2, myf2]) for i in 1:100]
+
+@code_warntype evalfs2e([myf2, myf2, myf2, myf2, myf])
+
+@code_warntype evalfs3([ff(myf), ff(myf), myf2, myf2, myf2])
+
+
+using DensityInterface
+logdensityof(posterior)(rand(parameters))
+
+
+using BenchmarkTools
+using SparseArrays, LinearAlgebra
+using BAT.TypedTables
+using EFTfitter.Setfield
+
+
+tbl, bms = run_speed_test(model, verbose=true)
+
+run_speed_test(model, verbose=true)
+
+
+
+
+bms[3]
+
+tbl.Type[1]
+
+vs3 = 0# rand(model.parameters, 100)
+@btime(run_btime(posterior, vs3), setup=(vs3 = rand(model.parameters, 100)))
+
+
+a = @benchmark rand(model.parameters)
+median(a)
+median(a.times)
+a.memory
+a.allocs
+dump(a)
+
+@btime(sort!(x), setup=(x = rand(5)), evals=1)
+
+typeof(posterior.likelihood.density._d.invcov)
+
+false ? println("Hi") : nothing
+
+
+
+rarr2 = [[rand(), rand()] for i in 1:n]
+
+
+function f1(n)
+    r = []
+    for i in 1:n
+        if rand() > 0.5
+            push!(r, (rand(), rand()))
+        else
+            push!(r, rand())
+        end
+    end
+    return r
+end
+
+function f1nt(n)
+    r = []
+    for i in 1:n
+        if rand() > 0.5
+            push!(r, (prediction=rand(), unc=rand()))
+        else
+            push!(r, (prediction = rand(),))
+        end
+    end
+    return r
+end
+
+function f2(n)
+    r = [rand() for i in 1:n]
+    r2 = [rand() for i in 1:n]
+    return r, r2
+end
+
+n =  50000
+r = f1(n)
+rnt = f1nt(n)
+r1, r2 = f2(n)
+
+rarr = [[ri...] for ri in r]
+
+function fs(a)
+    return a[1]
+end
+using BenchmarkTools
+@btime rs = [fs(ri) for ri in r]
+
+@btime r = [ri.prediction for ri in rnt]
+
+r
+
+rnt.prediction
+
+for i in 1:10000
+    (p->p.prediction).(rnt)
+end
+@btime map(p->p.prediction, rnt)
+@btime getfield.(rnt, :prediction)
+
+@btime map(p->p[1], rarr)
+
+@btime rarr[1:end]
+
+z = @view map(p->p.prediction, rnt)
+
+z = view(r[:], 1)
+
+
+using ValueShapes
+using BAT.ArraysOfArrays
+rnt
+
+@btime shape = valshape(rnt[1])
+@btime data = nestedview(Array{Float64}(undef, totalndof(shape), length(rnt)))
+@btime Y = shape.(data)
+Y[:] = rnt
+
+sna = ShapedAsNTArray(rarr2, shape)
+sna.unc
+@btime zeros(50000)
+
+
+
+z = () -> 5
+
+z()

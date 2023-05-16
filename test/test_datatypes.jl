@@ -3,14 +3,16 @@
 
     # Test type Observable:
     obs1 = @inferred Observable(test_function)
-    @test obs1.func == test_function
+    @test obs1.prediction == test_function
     @test obs1.min == -Inf
     @test obs1.max == Inf
+    @test obs1.weight == 1.0
 
-    obs2 = @inferred Observable(test_function, min=-5, max=5)
-    @test obs2.func == test_function
+    obs2 = @inferred Observable(test_function, min=-5, max=5, weight=2.1)
+    @test obs2.prediction == test_function
     @test obs2.min == -5
     @test obs2.max == 5
+    @test obs2.weight == 2.1
 
     # Test type Measurement:
     meas1 = @inferred Measurement(test_function, 50.0, uncertainties=(unc1=0.5, unc2=0.3), active=true)
@@ -20,9 +22,9 @@
 
     #Test type MeasurementDistribution:
     measdist1 = MeasurementDistribution([obs1, obs1], [50.0, 49.9], 
-                uncertainties=(unc1=[0.5, 0.4], unc2=[0.3, 0.29]), active=[true, false])
+               uncertainties=(unc1=[0.5, 0.4], unc2=[0.3, 0.29]), active=[true, false])
     measdist2 = MeasurementDistribution([obs1, obs1], [50.0, 49.9], 
-                uncertainties=(unc1=[0.5, 0.4], unc2=[0.3, 0.29]), active=true)
+               uncertainties=(unc1=[0.5, 0.4], unc2=[0.3, 0.29]), active=true)
     @test measdist1.active == [true, false]
     @test measdist2.active == [true, true]
 

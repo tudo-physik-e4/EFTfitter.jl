@@ -12,6 +12,9 @@ using Parameters
 using RecipesBase
 using Requires
 using ValueShapes
+using TypedTables
+using BenchmarkTools # TODO: make optional
+using SparseArrays
 using DensityInterface
 import DensityInterface: logdensityof
 
@@ -30,3 +33,6 @@ function __init__()
 end
 
 end # module
+
+
+#rm: ArraysOfArrays, RobustAdaptiveMetropolisSampler
