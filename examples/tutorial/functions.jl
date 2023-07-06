@@ -56,7 +56,19 @@ function eval_functions_d(f_vec, params, preds, uncs)
         preds[i] = res.pred
         uncs[i] = res.unc
     end
-    return preds, uncs
+    #return preds, uncs
+end
+
+
+function eval_functions_f(f_vec, params)
+    ps = Float64[]
+    uncs = Float64[]
+    for i in eachindex(f_vec)
+        res::Prediction = f_vec[i](params)
+        push!(ps, res.pred)
+        push!(uncs, res.unc)
+    end
+    return ps, uncs
 end
 
 function eval_functions_e(f_vec, params, preds, uncs)
@@ -93,6 +105,8 @@ preds = zeros(100)
 uncs = zeros(100)
 @btime eval_functions_d(functions_vector_2_p, params, preds, uncs) 
 @btime eval_functions_d(functions_vector_12_p, params, preds, uncs) 
+@btime eval_functions_f(functions_vector_12_p, params) 
+
 
 @btime eval_functions_e(functions_vector_12, params, preds, uncs)
 

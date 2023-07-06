@@ -9,6 +9,8 @@ struct _NuisanceCorrelation
 end
 
 
+
+
 struct EFTfitterDensity{M}
     measured_values::Vector{Float64}
     observable_functions::Vector{Function}
@@ -16,6 +18,15 @@ struct EFTfitterDensity{M}
     observable_maxs::Vector{Float64}
     invcov::M
     check_bounds::Bool
+    predictions::Matrix{Float64}
+    prediction_uncertainties::Matrix{Float64}
+    limit_distributions::Vector{Distribution}
+    limit_functions::Vector{Function}
+    limit_predictions::Matrix{Float64}
+    limit_uncertainties::Matrix{Float64}
+    has_model_uncertainties::Bool
+    has_limits::Bool
+    has_nuisance_correlations::Bool
 end
 @inline DensityInterface.DensityKind(::EFTfitterDensity) = IsDensity()
 
@@ -45,7 +56,7 @@ end
 # end
 # @inline DensityInterface.DensityKind(::EFTfitterDensityWithLimits) = IsDensity()
 
-#TODO: Add extra Density if observable uncertainties are present
+
 function EFTfitterDensity(m::EFTfitterModel)
     measured_values = Float64[meas.value for meas in m.measurements]
     observable_functions = Function[meas.observable.prediction for meas in m.measurements]
@@ -57,10 +68,27 @@ function EFTfitterDensity(m::EFTfitterModel)
     lower_bounds = any(x->x!=-Inf, observable_mins)
     check_bounds = any([upper_bounds, lower_bounds])
 
+    #todo: make this a function
+    v = rand(m.parameters)
+    predicted_values = [f(v) for f in observable_functions]
+    has_model_uncertainties = typeof(predicted_values) == Vector{Float64} ? false : true
+
     invcov = inv(get_total_covariance(m))
     w = length(observable_weights) * normalize(observable_weights, 1)
     invcov_weighted = w .* invcov
     M_invcov = m.CovarianceType(invcov_weighted)
+
+    nthreads = Threads.nthreads()
+    predictions = zeros(nthreads, length(observable_functions))
+    prediction_uncertainties = zeros(nthreads, length(observable_functions))
+
+    has_limits = false
+    limit_functions =  Function[]
+    limit_distributions = Distribution[]
+    limit_predictions = zeros(nthreads, length(limit_functions))
+    limit_uncertainties = zeros(nthreads, length(limit_functions))
+
+    has_nuisance_correlations = false
 
     return EFTfitterDensity(
             measured_values,
@@ -68,9 +96,19 @@ function EFTfitterDensity(m::EFTfitterModel)
             observable_mins,
             observable_maxs,
             M_invcov,
-            check_bounds    
+            check_bounds,
+            predictions,
+            prediction_uncertainties,
+            limit_distributions,
+            limit_functions,
+            limit_predictions,
+            limit_uncertainties,
+            has_model_uncertainties,
+            has_limits,
+            has_nuisance_correlations
         )
 end
+
 
 using SpecialFunctions
 function Normal_from_limit(best_fit_value, limit, confidence_level)
@@ -161,34 +199,106 @@ end
 
 function check_obs_bounds(r::Vector{Float64}, mins::Vector{Float64}, maxs::Vector{Float64})
     withinbounds = [iswithinbounds(r[i], mins[i], maxs[i]) for i in 1:length(r)]
-    return all(withinbounds)
+    all(withinbounds) ? (return 1.) : (return -Inf)
 end
 
+# old:
+# function evaluate_funcs(mu::Val{false}, arr::Vector{Function}, params)
+#     return [arr[i](params) for i in 1:length(arr)]
+# end
 
-function evaluate_funcs(arr::Vector{Function}, params)
-    return [arr[i](params) for i in 1:length(arr)]
+# without model uncertainties
+function evaluate_funcs!(mu::Val{false}, arr::Vector{Function}, params, m)
+    for i in eachindex(arr)
+        m.predictions[Threads.threadid(), i] = arr[i](params)
+    end
 end
 
+# with model uncertainties
+function evaluate_funcs!(mu::Val{true}, arr::Vector{Function}, params, m)
+    for i in eachindex(arr)
+        res::Prediction = Prediction(arr[i](params))
+        m.predictions[Threads.threadid(), i] = res.pred
+        m.prediction_uncertainties[Threads.threadid(), i] = res.unc
+    end
+end
+
+function add_uncs_to_invcov!(M, r)
+    for i in 1:size(M)[1]
+        M[i, i] += r[i]^2
+    end
+end
+
+# # old:
+# function DensityInterface.logdensityof(
+#     m::EFTfitterDensity,
+#     params
+# )
+#     r = evaluate_funcs(m.observable_functions, params)
+
+#     if m.check_bounds
+#         ib = check_obs_bounds(r, m.observable_mins, m.observable_maxs)
+#         if ib == false
+#             return -Inf
+#         end
+#     end
+
+#     r = r-m.measured_values
+#     r1 = m.invcov*r
+#     result = -dot(r, r1)
+
+#     return  0.5*result
+# end
+
+
+
+
+# no nuisances and no model uncertainties
 function DensityInterface.logdensityof(
     m::EFTfitterDensity,
     params
 )
-    r = evaluate_funcs(m.observable_functions, params)
+    evaluate_funcs!(Val(m.has_model_uncertainties), m.observable_functions, params, m)
 
-    if m.check_bounds
-        ib = check_obs_bounds(r, m.observable_mins, m.observable_maxs)
-        if ib == false
-            return -Inf
-        end
-    end
+    # #TODO: make a function
+    # if m.check_bounds
+    #     ib = check_obs_bounds(predictions, m.observable_mins, m.observable_maxs)
+    #     if ib == false
+    #         return -Inf
+    #     end
+    # end
 
-    r = r-m.measured_values
+    # TODO: change from dispatch on Vals to Types for speed
+    result = calculate_l(m, Val(m.has_model_uncertainties), Val(m.has_limits))
+
+    return result
+end
+
+# no model uncertainties, no limits
+function calculate_l(m::EFTfitterDensity, mu::Val{false}, lim::Val{false})
+    predictions = m.predictions[Threads.threadid(), :]
+
+    inbounds = check_obs_bounds(predictions, m.observable_mins, m.observable_maxs)
+
+    r = predictions-m.measured_values
     r1 = m.invcov*r
     result = -dot(r, r1)
 
-    return  0.5*result
+    return  0.5*result*inbounds
 end
 
+# with model uncertainties
+function calculate_l(m::EFTfitterDensity, mu::Val{true}, lim::Val{false})
+    predictions = m.predictions[Threads.threadid(), :]
+
+    inbounds = check_obs_bounds(predictions, m.observable_mins, m.observable_maxs)
+
+    r = predictions-m.measured_values
+    r1 = m.invcov*r
+    result = -dot(r, r1)
+
+    return  0.5*result*inbounds
+end
 
 # function DensityInterface.logdensityof(
 #     m::EFTfitterDensityWithLimits,
@@ -198,7 +308,7 @@ end
 
 #     if m.check_bounds
 #         ib = check_obs_bounds(r, m.observable_mins, m.observable_maxs)
-#         if ib == false
+#         if ib == false 
 #             return -Inf
 #         end
 #     end
@@ -311,3 +421,4 @@ end
 
 
 
+    

@@ -79,8 +79,6 @@ function EFTfitterModel(
 end
 
 
-
-
 #=============================================================#
 """
     get_parameters(m::EFTfitterModel)

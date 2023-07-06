@@ -7,6 +7,16 @@ export Correlation
 export NoCorrelation
 export NuisanceCorrelation
 
+# TODO: Documentation
+struct Prediction
+    pred::Float64
+    unc::Float64
+end
+
+Prediction(a::Float64) = Prediction(a, 0.)
+Prediction(a::Tuple{Float64, Float64}) = Prediction(a[1], a[2])
+Prediction(a::Prediction) = a
+
 
 """
     struct Observable
@@ -248,10 +258,3 @@ function NuisanceCorrelation(unc_key::Symbol, meas1::Symbol, meas2::Symbol, prio
     dist, shape = ValueShapes._ntd_dist_and_shape(prior)
     return NuisanceCorrelation(unc_key, meas1, meas2, dist)
 end
-
-
-
-m = rand(5,5)
-
-m2 = Matrix(Symmetric(m))
-typeof(m2)
