@@ -10,4 +10,5 @@ Test.@testset "Package EFTfitter" begin
     include("test_utils.jl")
     include("test_inputs/test_inputs.jl")
     include("test_ranking.jl")
+    include("test_likelihood.jl")
 end

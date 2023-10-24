@@ -42,12 +42,6 @@ function xsec1(params)
     c = [20.12, 5.56, 325.556]
     return c[1] * params.C1 + c[2] * params.C1 * params.C2+ c[3] * params.C2
 end
-# 
-# function xsec1(params)
-#     c = [20.12, 5.56, 325.556]
-#     result = c[1] * params.C1 + c[2] * params.C1 * params.C2+ c[3] * params.C2
-#     return (result, 0.1 * params.C1 * result)
-# end
 
 function xsec2(params)
     coeffs = [2.12, 4.3, 12.6]
@@ -116,6 +110,10 @@ measurements = (
     MeasDist = MeasurementDistribution(diff_xsec, [1.9, 2.93, 4.4],
                uncertainties = (stat = [0.7, 1.1, 1.2], syst= [0.7, 0.8, 1.3], another_unc = [1.0, 1.2, 1.9]),
                active=[true, false, true]), # `active = false`: exclude all bins from fit, `active = [true, true, false]`: exclude only third bin from fit
+)
+
+limits = (
+    UL1 = GaussianUpperLimit(xsec1, 0.01, 5.0, 0.9),
 )
 
 # Further information on the constructors see the API documentation of [`Measurement`](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/api/#EFTfitter.Measurement)

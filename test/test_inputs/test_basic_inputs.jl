@@ -36,17 +36,18 @@
     model1 = EFTfitterModel(parameters1, measurements1, correlations1)
     
     @testset "Test EFTfitterModel" begin
-        @test model1.measurements.meas1.observable == Observable(testfunc1, -Inf, Inf)
+        @test model1.measurements.meas1.observable == Observable(testfunc1)
 
         @test length(model1.measurements) == 2
         @test keys(model1.measurements) == (:meas1, :meas3)
-        @test model1.measurements.meas1 == Measurement(Observable(testfunc1, -Inf, Inf), 111.1, (unc1=10.1, unc3=13.3), true)
+        @test model1.measurements.meas1 == Measurement(Observable(testfunc1, min=-Inf, max=Inf), 111.1, (unc1=10.1, unc3=13.3), true)
         @test model1.measurements.meas3 == Measurement(Observable(testfunc1, min=0, max=1000), 333.3, (unc1=30.1, unc3=30.3), true)        
     
-        @test get_observables(model1) == (testfunc1 = Observable(testfunc1, -Inf, Inf),)
+        @test get_observables(model1) == (testfunc1 = Observable(testfunc1, min=-Inf, max=Inf),)
     end
     
     @testset "Test EFTfitterDensity" begin
+        PosteriorMeasure(model1)
         eftfitter_density = PosteriorMeasure(model1).likelihood.density._d
         
         @test isa(eftfitter_density, EFTfitterDensity)
@@ -66,3 +67,4 @@
     end
     
 end
+

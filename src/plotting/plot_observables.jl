@@ -7,9 +7,9 @@
     x_nt, x_range, x_i = range_to_namedtuples(params)
     x_label = keys(params)[x_i]
     title_string = get_obs_title(params, x_i, titlewidth=titlewidth)
-    y = observable.func.(x_nt)
+    y = observable.prediction.(x_nt)
 
-    y_label = string(observable.func)
+    y_label = string(observable.prediction)
 
     @series begin
         seriestype --> :path
@@ -72,7 +72,7 @@ end
     bin_names = ["bin$i" for i in 1:length(observables)]
 )
     nbins = length(observables)
-    ys = [obs.func(params) for obs in observables]
+    ys = [obs.prediction(params) for obs in observables]
 
     @series begin
         seriestype --> :steppre
