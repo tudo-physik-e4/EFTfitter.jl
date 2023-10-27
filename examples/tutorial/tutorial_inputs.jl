@@ -1,4 +1,5 @@
 # EFTfitter.jl - Tutorial
+
 # This tutorial introduces the basic functionalities of EFTfitter.jl using a generic example.
 # More functionalities of EFTfitter.jl, like handling nuisance correlations
 # or ranking measurements and uncertainties, are shown in the
@@ -42,12 +43,6 @@ function xsec1(params)
     c = [20.12, 5.56, 325.556]
     return c[1] * params.C1 + c[2] * params.C1 * params.C2+ c[3] * params.C2
 end
-# 
-# function xsec1(params)
-#     c = [20.12, 5.56, 325.556]
-#     result = c[1] * params.C1 + c[2] * params.C1 * params.C2+ c[3] * params.C2
-#     return (result, 0.1 * params.C1 * result)
-# end
 
 function xsec2(params)
     coeffs = [2.12, 4.3, 12.6]
@@ -122,6 +117,7 @@ measurements = (
 # and [`MeasurementDistribution`](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/api/#EFTfitter.MeasurementDistribution).
 
 # Note: When using only one measurement or only one type of uncertainties,
+
 # make sure to insert a comma, like: `uncertainties = (stat = 0.5,)` so that
 # Julia can parse the [`NamedTuple`](https://docs.julialang.org/en/v1/manual/types/#Named-Tuple-Types) correctly!
 
@@ -175,4 +171,3 @@ correlations = (
 )
 
 # This file was generated using Literate.jl, https://github.com/fredrikekre/Literate.jl
-
