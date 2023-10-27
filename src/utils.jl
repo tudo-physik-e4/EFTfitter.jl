@@ -74,30 +74,55 @@ end
 
 
 
-
 function run_logdensity(posterior, vs)
     [logdensityof(posterior)(v) for v in vs]
 end
 
+"""
+    run_speed_test(m::EFTfitterModel; matrix_types=[Matrix, sparse, Symmetric], vs=rand(m.parameters, 10), verbose=true)
 
-export run_speed_test
+Test different data types for the (inverse) covariance matrix to find the optimal one in terms of speed.
+
+# Arguments
+- `m::EFTfitterModel`: The model for which the speed test is performed.
+
+# Keyword Arguments
+- `matrix_types::Vector{DataType}=[Matrix, sparse, Symmetric]`: The types of matrices to be tested.
+- `vs`: Sample values to test. Default is 10 random samples from `m.parameters`.
+- `verbose::Bool=true`: If `true`, informative messages and results are displayed during the test.
+
+# Returns
+- A table summarizing the test results, showing minimum computation times, memory allocations, etc., for each matrix type.
+- A list of benchmark results for each matrix type.
+
+Notes
+
+The function benchmarks the provided matrix types using the given sample values and returns recommendations based on minimum computation times.
+The recommended matrix type is the one with the shortest minimum time.
+
+# Example
+```julia-repl
+julia> tbl, benchmarks = run_speed_test(model)
+```
+"""
+
 function run_speed_test(
     m::EFTfitterModel; 
-    typs= [Matrix, sparse, Symmetric], 
+    matrix_types = [Matrix, sparse, Symmetric], 
     vs = rand(m.parameters, 10), 
     verbose=true
 )
     @info "Running speed comparisons to find optimal data type for (inverse) covariance matrix!"
 
     benchmarks = []
-    covtyps = [] 
+    mtypes = [] 
 
-    for t in typs
+    for t in matrix_types
         current_model = @set m.CovarianceType = t;
         posterior = PosteriorMeasure(current_model) 
 
-        current_invcov_type = typeof(posterior.likelihood.density._d.invcov)
-        push!(covtyps, current_invcov_type)
+        current_invcov_type = typeof(posterior.likelihood.density._d.crossmatrix.m)
+        push!(mtypes, current_invcov_type)
 
         verbose ? (@info "Testing type: $(current_invcov_type)") : nothing
 
@@ -107,12 +132,12 @@ function run_speed_test(
         verbose ? display(b) : nothing
     end
 
-    median_times = median.([b.times for b in benchmarks])
-    sorted_idxs = sortperm(median_times)
+    min_times = minimum.([b.times for b in benchmarks])
+    sorted_idxs = sortperm(min_times)
     allocations = [benchmarks[i].allocs for i in sorted_idxs]
     memory = [benchmarks[i].memory for i in sorted_idxs]
 
-    tbl = Table(Type=covtyps[sorted_idxs], MedianTime=median_times[sorted_idxs], Allocations=allocations, Memory=memory)
+    tbl = Table(Type=mtypes[sorted_idxs], MinTime=min_times[sorted_idxs], Allocations=allocations, Memory=memory)
 
     verbose ? display(tbl) : nothing
     
@@ -120,3 +145,4 @@ function run_speed_test(
 
     return tbl, benchmarks
 end
+export run_speed_test

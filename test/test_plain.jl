@@ -57,6 +57,8 @@ correlations = (
 model = EFTfitterModel(parameters, measurements, correlations, )
 posterior = PosteriorMeasure(model)
 
+run_speed_test(model)
+
 v = (p1 = 10.826122384321511, p2 = -8.32129957354641)
 logp = logdensityof(posterior)
 logp(v)
