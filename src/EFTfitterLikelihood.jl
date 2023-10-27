@@ -3,9 +3,14 @@ function iswithinbounds(r::Float64, min::Float64, max::Float64)
 end
 
 # TODO: add dispatch, return 1 by default
-function check_obs_bounds(r::Vector{Float64}, mins::Vector{Float64}, maxs::Vector{Float64})
-    withinbounds = [iswithinbounds(r[i], mins[i], maxs[i]) for i in 1:length(r)]
-    all(withinbounds) ? (return 1.) : (return -Inf)
+function check_observable_bounds(cb::NoBoundsCheck, predictions, mins::Vector{Float64}, maxs::Vector{Float64})
+    return 1.0
+end
+
+function check_observable_bounds(cb::BoundsCheck, predictions, mins::Vector{Float64}, maxs::Vector{Float64})
+    r = view(predictions, Threads.threadid(), :)
+    withinbounds = [iswithinbounds(r[i], mins[i], maxs[i]) for i in eachindex(r)]
+    all(withinbounds) ? (return 1.) : (return 1e50)
 end
 
 
@@ -18,7 +23,7 @@ function evaluate_funcs!(nomuncs::NoModelUncertainties, D::EFTfitterDensity, cur
     end
 end
 
-# with model uncertainties #TODO: remove arr 
+# with model uncertainties
 function evaluate_funcs!(muncs::HasModelUncertainties, D::EFTfitterDensity, current_params)
     funcs = D.observable_functions
     for i in eachindex(funcs)
@@ -35,10 +40,11 @@ function DensityInterface.logdensityof(
 )
     evaluate_funcs!(D.model_uncertainties, D, params)
 
-    #TODO: check_observable_bounds
+    bounds_factor = check_observable_bounds(D.check_bounds, D.predictions, D.observable_mins, D.observable_maxs)
+
     result = calculate_likelihood(D.model_uncertainties, D.nuisance_correlations, D, params)
 
-    return result
+    return bounds_factor * result
 end
 
 # no model uncertainties & no limits, weights are already included in the inverse covariance matrix

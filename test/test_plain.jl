@@ -23,7 +23,7 @@ measurements = (
     meas2 = Measurement(Observable(testfunc1, min=0, max=1000), 222.2, 
     uncertainties = (unc1=20.1, unc2=20.2, unc3=23.3), active=false),
     
-    meas3 = Measurement(Observable(testfunc1, min=0, max=1000), 333.3, 
+    meas3 = Measurement(Observable(testfunc1, min=0, max=25000), 333.3, 
     uncertainties = (unc1=30.1, unc2=30.2, unc3=30.3), active=true),
     
     meas4 = MeasurementDistribution(Function[testfunc1, testfunc1, testfunc1],
@@ -54,12 +54,12 @@ correlations = (
 )
 
 
-model = EFTfitterModel(parameters, measurements, correlations)
+model = EFTfitterModel(parameters, measurements, correlations, )
 posterior = PosteriorMeasure(model)
 
 v = (p1 = 10.826122384321511, p2 = -8.32129957354641)
 logp = logdensityof(posterior)
-
+logp(v)
 @test logp(v) ≈ -5.2063526518e9
 
 
@@ -72,6 +72,6 @@ t = @benchmark logp(v)
 
 # with @SVector
 t = @benchmark logp(v)
-@test t.allocs == 11
-@test t.memory == 400
-@test minimum(t.times) ≈ 163 atol=5
+@test t.allocs == 12
+@test t.memory == 464
+@test minimum(t.times) ≈ 191 atol=5

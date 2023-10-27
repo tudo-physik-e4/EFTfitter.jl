@@ -59,10 +59,18 @@ struct HasLimits <: LimitsIndicator end
 struct NoLimits <: LimitsIndicator end
 # TODO: Limits not yet used
 
+#------------- Bounds Check Indicator ---------------------------------------------------------#
+# Status indicating whether observable bounds should be checked or not
+abstract type BoundsCheckIndicator end
+struct BoundsCheck <: BoundsCheckIndicator end
+struct NoBoundsCheck <: BoundsCheckIndicator end
+
+
 
 #------------- EFTfitterDensity ---------------------------------------------------------#
 struct EFTfitterDensity{
-    M<:CovOrInverseMatrix, 
+    M<:CovOrInverseMatrix,
+    B<:BoundsCheckIndicator, 
     MU<:ModelUncertaintiesIndicator, 
     NC<:NuisanceCorrelationsIndicator, 
     L<:LimitsIndicator
@@ -73,7 +81,7 @@ struct EFTfitterDensity{
     observable_maxs::Vector{Float64}
     observable_weights::Vector{Float64} # observable weights 
     crossmatrix::M # CovMatrix or InvCovMatrix
-    check_bounds::Bool  # whether to check observable bounds or not
+    check_bounds::B # whether to check observable bounds or not
     predictions::Matrix{Float64} 
     prediction_uncertainties::Matrix{Float64} # only used if model uncertainties are present
     # limit_distributions::Vector{Distribution} # only used if limits are present
@@ -128,7 +136,7 @@ function EFTfitterDensity(m::EFTfitterModel)
 
     upper_bounds = any(x->x!=Inf, observable_maxs)
     lower_bounds = any(x->x!=-Inf, observable_mins)
-    check_bounds = any([upper_bounds, lower_bounds])
+    check_bounds = any([upper_bounds, lower_bounds]) ? BoundsCheck() : NoBoundsCheck()
 
     # check if model uncertainties are present
     #TODO: make this a function
