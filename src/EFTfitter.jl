@@ -34,6 +34,3 @@ function __init__()
 end
 
 end # module
-
-# TODO
-#rm: ArraysOfArrays, RobustAdaptiveMetropolisSampler, BenchmarkTools, StaticArrays? 
