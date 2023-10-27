@@ -74,4 +74,4 @@ t = @benchmark logp(v)
 t = @benchmark logp(v)
 @test t.allocs == 11
 @test t.memory == 400
-@test minimum(t.times) ≈ 178 atol=5
+@test minimum(t.times) ≈ 163 atol=5

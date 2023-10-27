@@ -36,7 +36,7 @@ end
 using BenchmarkTools
 
 
-d = 2000
+d = 100
 
 M = generate_covariance_matrix(d)
 x = rand(d)
@@ -45,6 +45,10 @@ x = rand(d)
 
 L = cholesky(M).L';
 @btime cholesky_product2(L, x)
+
+
+
+
 
 
 # For Model Uncertainties

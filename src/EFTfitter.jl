@@ -21,6 +21,7 @@ import DensityInterface: logdensityof
 include("datatypes.jl")
 include("EFTfitterModel.jl")
 include("EFTfitterDensity.jl")
+include("EFTfitterLikelihood.jl")
 include("ranking/ranking.jl")
 include("plotting/plotting.jl")
 include("utils.jl")
@@ -34,5 +35,5 @@ end
 
 end # module
 
-
-#rm: ArraysOfArrays, RobustAdaptiveMetropolisSampler
+# TODO
+#rm: ArraysOfArrays, RobustAdaptiveMetropolisSampler, BenchmarkTools, StaticArrays? 

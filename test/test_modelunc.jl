@@ -4,6 +4,7 @@ using BAT
 using DensityInterface
 using BenchmarkTools
 using Test
+using StaticArrays
 
 parameters = BAT.NamedTupleDist(
     p1 = -20..20, 
@@ -11,7 +12,7 @@ parameters = BAT.NamedTupleDist(
 )
 
 function testfunc1(params)
-    c = [20.12, 5.56, 325.556]
+    c = @SVector[20.12, 5.56, 325.556]
     m = c[1] * params.p1^2 + c[2] * params.p1 * params.p2 + c[3] * params.p2^2
     u = c[1] * params.p1^2
     return (m, u)
@@ -61,8 +62,9 @@ posterior = PosteriorMeasure(model)
 v = (p1 = 10.826122384321511, p2 = -8.32129957354641)
 logp = logdensityof(posterior)
 
-logp(v) 
-@test logp(v) ≈ -5.2063526518e9
+logp(v)
+@test logp(v) ≈ -218.67344468325953 
+@test logp(v) ≈ -5.2063526518e9  # for modeluncertainty=0
 
 @btime logp(v)
 

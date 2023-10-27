@@ -62,10 +62,12 @@ nuisance_correlations = (
 model = EFTfitterModel(parameters, measurements, correlations, nuisances=nuisance_correlations, )
 posterior = PosteriorMeasure(model)
 
-v = (p1 = 10.826122384321511, p2 = -8.32129957354641, ρ1 = 0.4, ρ2 = 0.8)
+v = (p1 = 10.826122384321511, p2 = -8.32129957354641, ρ1 = 0.4)
 logp = logdensityof(posterior)
+logp(v)
 
-@test logp(v) ≈ 
+logp(rand(posterior.prior))
+@test logp(v) ≈ -5.213494198124699e9
 
 @btime logp(v)
 
