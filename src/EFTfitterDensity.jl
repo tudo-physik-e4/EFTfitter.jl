@@ -35,7 +35,7 @@ end
 NuisanceCorrelations(nuisances, m::EFTfitterModel) = NuisanceCorrelations(nuisances, get_covariances(m))
 
 
-
+# Status indicating whether upper limits are used or not
 abstract type LimitsStatus end
 struct HasLimits <: LimitsStatus end
 struct NoLimits <: LimitsStatus end
@@ -47,18 +47,18 @@ struct EFTfitterDensity{M<:MatrixType, MU<:ModelUncertaintiesStatus, NC<:Abstrac
     observable_mins::Vector{Float64}
     observable_maxs::Vector{Float64}
     weights::Vector{Float64}
-    matrix::M
-    original_diag::Vector{Float64}
-    check_bounds::Bool
+    matrix::M # CovarianceMatrix or InverseCovarianceMatrix
+    original_diag::Vector{Float64} # original diagonal of the covariance matrix
+    check_bounds::Bool  # whether to check bounds or not
     predictions::Matrix{Float64}
-    prediction_uncertainties::Matrix{Float64}
-    limit_distributions::Vector{Distribution}
-    limit_functions::Vector{Function}
-    limit_predictions::Matrix{Float64}
-    limit_uncertainties::Matrix{Float64}
-    mus::MU
-    ls::L
-    nuisance_correlations::NC
+    prediction_uncertainties::Matrix{Float64} # only used if model uncertainties are present
+    limit_distributions::Vector{Distribution} # only used if limits are present
+    limit_functions::Vector{Function}      # only used if limits are present
+    limit_predictions::Matrix{Float64}    # only used if limits are present
+    limit_uncertainties::Matrix{Float64}  # only used if limits are present
+    mus::MU  # HasModelUncertainties or NoModelUncertainties
+    ls::L #   HasLimits or NoLimits
+    nuisance_correlations::NC   # NuisanceCorrelations or NoNuissanceCorrelations
 end
 @inline DensityInterface.DensityKind(::EFTfitterDensity) = IsDensity()
 
@@ -118,12 +118,13 @@ function EFTfitterDensity(m::EFTfitterModel)
     @show m.nuisances#zip(m.nuisances, collect(keys(m.nuisances)))
     
     nuisances = _NuisanceCorrelation[]
-    for (nui, nui_k) in zip(m.nuisances, collect(keys(m.nuisances)))
-        unc = findfirst(x->x==nui.unc_key , unc_keys)
-        i = findfirst(x->x==nui.meas1 , meas_keys)
-        j = findfirst(x->x==nui.meas2 , meas_keys)
-        push!(nuisances, _NuisanceCorrelation(unc, i, j, nui_k))
-    end
+    #TODO: fix this!
+    # for (nui, nui_k) in zip(m.nuisances, collect(keys(m.nuisances)))
+    #     unc = findfirst(x->x==nui.unc_key , unc_keys)
+    #     i = findfirst(x->x==nui.meas1 , meas_keys)
+    #     j = findfirst(x->x==nui.meas2 , meas_keys)
+    #     push!(nuisances, _NuisanceCorrelation(unc, i, j, nui_k))
+    # end
 
     nui =  isempty(nuisances) ? NoNuissanceCorrelations() : NuisanceCorrelations(nuisances, m)
 

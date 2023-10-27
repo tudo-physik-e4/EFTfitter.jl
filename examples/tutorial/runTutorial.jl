@@ -25,7 +25,21 @@ using LinearAlgebra
 f(x) = Symmetric(sparse(x))
 
 model = EFTfitterModel(parameters, measurements, correlations, CovarianceType=f)
+posterior = PosteriorMeasure(model)
 #run_speed_test(model)
+
+v = rand(parameters)
+v = (C1 = 1.3646163105428428, C2 = 0.0669263861339656)
+
+#@code_warntype EFTfitter.evaluate_funcs!(m.mus, m.observable_functions, v, m)
+
+using BenchmarkTools
+using DensityInterface
+# logdensityof(posterior)(v)
+@btime logdensityof(posterior)(v) # -71.62957930828858
+# 350.000 ns (18 allocations: 1.19 KiB)
+
+
 
 # To sample the posterior distribution, we specify that our `EFTfitterModel`
 # should be used and then setup BAT.jl to sample the EFTfitter likelihood.
