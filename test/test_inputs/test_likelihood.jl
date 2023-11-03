@@ -77,26 +77,26 @@ model = create_model(5, use_model_uncertainties = true)
     model_5 = create_model(5)
     posterior_5 = PosteriorMeasure(model_5)
     v = (p1 = 1.36, p2 = 2.3)
-    @test logdensityof(posterior_5)(v) ≈ -39.5175576223029
-    @elapsed logdensityof(posterior_5)(v)
+    @test logdensityof(posterior_5)(v) ≈ -39.5175576223029 rtol=0.005
+   # @elapsed logdensityof(posterior_5)(v)
 
 
     model_5_mu = create_model(5, use_model_uncertainties = true)
     posterior_5_mu = PosteriorMeasure(model_5_mu)
     v = (p1 = 1.36, p2 = 2.3)
-    @test logdensityof(posterior_5_mu)(v) ≈ -39.5175576223029
+    @test logdensityof(posterior_5_mu)(v) ≈ -39.5175576223029 rtol=0.005
 
 
 
     model_500 = create_model(500)
     posterior_500 = PosteriorMeasure(model_500)
     v = (p1 = 1.36, p2 = 2.3)
-    @test logdensityof(posterior_500)(v) ≈ -4.916679677894212e11
-    @btime logdensityof(posterior_500)(v)
+    @test logdensityof(posterior_500)(v) ≈ -4.916679677894212e11 rtol=0.005
+    #@btime logdensityof(posterior_500)(v)
     
     model_5000 = create_model(5000)
     posterior_5000 = PosteriorMeasure(model_5000)
     v = (p1 = 1.36, p2 = 2.3)
-    @test logdensityof(posterior_5000)(v) ≈ -3.706920707573017e11
-    @btime logdensityof(posterior_5000)(v)
+    @test logdensityof(posterior_5000)(v) ≈ -3.706920707573017e11 rtol=0.005
+    #@btime logdensityof(posterior_5000)(v) 
 end

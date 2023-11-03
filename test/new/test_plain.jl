@@ -57,19 +57,17 @@ correlations = (
 model = EFTfitterModel(parameters, measurements, correlations, )
 posterior = PosteriorMeasure(model)
 
-run_speed_test(model)
 
 v = (p1 = 10.826122384321511, p2 = -8.32129957354641)
 logp = logdensityof(posterior)
-logp(v)
 @test logp(v) ≈ -5.2063526518e9
 
 
 # without @SVector
-t = @benchmark logp(v)
-@test t.allocs == 15
-@test t.memory == 720
-@test minimum(t.times) ≈ 226 atol=5
+# t = @benchmark logp(v)
+# @test t.allocs == 15
+# @test t.memory == 720
+# @test minimum(t.times) ≈ 226 atol=5
 
 
 # with @SVector

@@ -1,10 +1,10 @@
 using EFTfitter
 using IntervalSets
-using Distributions
 using BAT
 using DensityInterface
 using BenchmarkTools
 using Test
+using StaticArrays
 
 parameters = BAT.NamedTupleDist(
     p1 = -20..20, 
@@ -12,8 +12,10 @@ parameters = BAT.NamedTupleDist(
 )
 
 function testfunc1(params)
-    c = [20.12, 5.56, 325.556]
-    return c[1] * params.p1^2 + c[2] * params.p1 * params.p2 + c[3] * params.p2^2
+    c = @SVector[20.12, 5.56, 325.556]
+    m = c[1] * params.p1^2 + c[2] * params.p1 * params.p2 + c[3] * params.p2^2
+    u = c[1] * params.p1^2
+    return (m, u)
 end
 
 measurements = (
@@ -53,23 +55,17 @@ correlations = (
     unc3 = Correlation(corr_matrix)
 )
 
-nuisance_correlations = (
-    ρ1 = NuisanceCorrelation(:unc1, :meas1, :meas3, 0..0.5),
-    ρ2 = NuisanceCorrelation(:unc1, :meas1, :meas2, truncated(Normal(0, 1), 0, 0.9)),
-)
 
-
-model = EFTfitterModel(parameters, measurements, correlations, nuisances=nuisance_correlations, )
+model = EFTfitterModel(parameters, measurements, correlations)
 posterior = PosteriorMeasure(model)
 
-v = (p1 = 10.826122384321511, p2 = -8.32129957354641, ρ1 = 0.4)
+v = (p1 = 10.826122384321511, p2 = -8.32129957354641)
 logp = logdensityof(posterior)
+
 logp(v)
+@test logp(v) ≈ -218.67344468325953 
+#@test logp(v) ≈ -5.2063526518e9  # for modeluncertainty=0
 
-logp(rand(posterior.prior))
-@test logp(v) ≈ -5.213494198124699e9
-
-@btime logp(v)
 
 t = @benchmark logp(v)
 @test t.allocs == 15

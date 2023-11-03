@@ -1,5 +1,6 @@
 using EFTfitter
 using IntervalSets
+using Distributions
 using BAT
 using DensityInterface
 using BenchmarkTools
@@ -13,19 +14,17 @@ parameters = BAT.NamedTupleDist(
 
 function testfunc1(params)
     c = @SVector[20.12, 5.56, 325.556]
-    m = c[1] * params.p1^2 + c[2] * params.p1 * params.p2 + c[3] * params.p2^2
-    u = c[1] * params.p1^2
-    return (m, u)
+    return c[1] * params.p1^2 + c[2] * params.p1 * params.p2 + c[3] * params.p2^2
 end
 
 measurements = (
     meas1 = Measurement(testfunc1, 111.1, 
     uncertainties = (unc1=10.1, unc2=12.2, unc3=13.3), active=true),
     
-    meas2 = Measurement(Observable(testfunc1, min=0, max=1000), 222.2, 
+    meas2 = Measurement(testfunc1, 222.2, 
     uncertainties = (unc1=20.1, unc2=20.2, unc3=23.3), active=false),
     
-    meas3 = Measurement(Observable(testfunc1, min=0, max=1000), 333.3, 
+    meas3 = Measurement(testfunc1, 333.3, 
     uncertainties = (unc1=30.1, unc2=30.2, unc3=30.3), active=true),
     
     meas4 = BinnedMeasurement(Function[testfunc1, testfunc1, testfunc1],
@@ -55,20 +54,32 @@ correlations = (
     unc3 = Correlation(corr_matrix)
 )
 
+nuisance_correlations = (
+    ρ1 = NuisanceCorrelation(:unc1, :meas1, :meas3, 0..0.5),
+    ρ2 = NuisanceCorrelation(:unc1, :meas1, :meas2, truncated(Normal(0, 1), 0, 0.9)),
+)
 
-model = EFTfitterModel(parameters, measurements, correlations)
+
+model = EFTfitterModel(parameters, measurements, correlations, nuisances=nuisance_correlations, )
 posterior = PosteriorMeasure(model)
 
-v = (p1 = 10.826122384321511, p2 = -8.32129957354641)
+v = (p1 = 10.826122384321511, p2 = -8.32129957354641, ρ1 = 0.4)
 logp = logdensityof(posterior)
 
-logp(v)
-@test logp(v) ≈ -218.67344468325953 
-@test logp(v) ≈ -5.2063526518e9  # for modeluncertainty=0
 
-@btime logp(v)
+logp(rand(posterior.prior))
+@test logp(v) ≈ -5.213494198124699e9
+
 
 t = @benchmark logp(v)
 @test t.allocs == 15
 @test t.memory == 720
 @test minimum(t.times) ≈ 226 atol=5
+
+myf = function(f, x)
+    for i in 1:10000
+        f(x)
+    end
+end
+
+@profview myf(logp, v)

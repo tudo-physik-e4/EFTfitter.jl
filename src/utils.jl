@@ -1,4 +1,4 @@
-export BLUE, cov_to_cor
+export BLUE, cov_to_cor, run_speed_test
 
 """
     cov_to_cor(cov::Array{<:Real, 2})
@@ -67,16 +67,17 @@ function BLUE(m::EFTfitterModel)
     return (value = τ_BLUE, unc = σ_BLUE, weights = α)
 end
 
+
 function all_observables_equal(model::EFTfitterModel)
     observable_functions = [m.observable.prediction for m in values(model.measurements)]
     all(y->y==observable_functions[1], observable_functions)
 end
 
 
-
 function run_logdensity(posterior, vs)
     [logdensityof(posterior)(v) for v in vs]
 end
+
 
 """
     run_speed_test(m::EFTfitterModel; matrix_types=[Matrix, sparse, Symmetric], vs=rand(m.parameters, 10), verbose=true)
@@ -105,7 +106,6 @@ The recommended matrix type is the one with the shortest minimum time.
 julia> tbl, benchmarks = run_speed_test(model)
 ```
 """
-
 function run_speed_test(
     m::EFTfitterModel; 
     matrix_types = [Matrix, sparse, Symmetric], 
@@ -145,4 +145,3 @@ function run_speed_test(
 
     return tbl, benchmarks
 end
-export run_speed_test

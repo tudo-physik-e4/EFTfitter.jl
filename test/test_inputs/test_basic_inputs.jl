@@ -56,12 +56,12 @@
         @test eftfitter_density.observable_functions == [testfunc1, testfunc1]
         @test eftfitter_density.observable_mins == [-Inf, 0]
         @test eftfitter_density.observable_maxs == [Inf, 1000.0]
-        @test eftfitter_density.invcov ≈ [ 0.00369157   -0.000244669; -0.000244669   0.000564432] rtol=0.01
-        @test eftfitter_density.check_bounds == true
+        @test eftfitter_density.crossmatrix.m ≈ [ 0.00369157   -0.000244669; -0.000244669   0.000564432] rtol=0.01
+        @test eftfitter_density.check_bounds == EFTfitter.BoundsCheck()
     
         # test evaluation of correct likelihood value at a few points:
         @test DensityInterface.logdensityof(eftfitter_density, (p1=0.0, p2=0.0)) ≈ -45.07398 rtol=0.01
-        @test DensityInterface.logdensityof(eftfitter_density, (p1=10.0, p2=-30.0)) ≈ -Inf
+        @test DensityInterface.logdensityof(eftfitter_density, (p1=10.0, p2=-30.0)) ≈ -1.6191906947178624e58  rtol=0.01
         @test DensityInterface.logdensityof(eftfitter_density, (p1=1.5, p2=-0.9)) ≈ -68.6575 rtol=0.01
         @test DensityInterface.logdensityof(eftfitter_density, (p1=-1.2, p2=-0.8)) ≈ -37.1857 rtol=0.01
     end

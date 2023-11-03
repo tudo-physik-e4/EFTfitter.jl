@@ -85,14 +85,14 @@ using BAT
     
     @testset "Test EFTfitterDensity" begin
         eftfitter_density = PosteriorMeasure(model1).likelihood.density._d
-        @test isa(eftfitter_density, EFTfitterDensityNuisance)
+        @test isa(eftfitter_density, EFTfitterDensity)
         
         @test eftfitter_density.measured_values == [111.1, 333.3, 10, 30]
         @test eftfitter_density.observable_functions == [testfunc1, testfunc1, testfunc1, testfunc1]
         @test eftfitter_density.observable_mins == [-Inf, 0, -Inf, -Inf]
         @test eftfitter_density.observable_maxs == [Inf, 1000.0, Inf, Inf]
-        @test eftfitter_density.check_bounds == true
-        @test eftfitter_density.covs ≈ [[102.01    0.0   0.0     0.0;
+        @test eftfitter_density.check_bounds == EFTfitter.BoundsCheck()
+        @test eftfitter_density.nuisance_correlations.covs ≈ [[102.01    0.0   0.0     0.0;
                                        0.0   906.01  0.0     0.0;
                                        0.0     0.0   0.0121  0.0;
                                        0.0     0.0   0.0     0.0169], 
@@ -101,25 +101,25 @@ using BAT
                                        0.581343    0.0     0.0961    0.0;
                                        0.627627    0.0     0.0       0.1089]] rtol=0.001
                                        
-        @test eftfitter_density.nuisances == [EFTfitter._NuisanceCorrelation(1, 1, 2, :ρ1)]
+        @test eftfitter_density.nuisance_correlations.nuisance_correlations == [EFTfitter.NuisanceCorrelationIndices(1, 1, 2, :ρ1)]
     
-        @test EFTfitter.get_current_invcov(eftfitter_density, (p1=0.0, p2=0.0, ρ1=0)) ≈ [0.00368812   -0.000105924  -0.0198158    -0.0184004;
+        @test inv(EFTfitter.get_current_cov(eftfitter_density.nuisance_correlations, eftfitter_density, (p1=0.0, p2=0.0, ρ1=0)).m) ≈ [0.00368812   -0.000105924  -0.0198158    -0.0184004;
                                                                                          -0.000105924   0.000551258   0.000569114   0.000528464;
                                                                                          -0.0198158     0.000569114   9.34861       0.0988625;
                                                                                          -0.0184004     0.000528464   0.0988625     8.04093] rtol=0.01
                                          
-     @test EFTfitter.get_current_invcov(eftfitter_density, (p1=0.0, p2=0.0, ρ1=0.2)) ≈ [0.00376476   -0.000233614  -0.0202275   -0.0187827
+     @test inv(EFTfitter.get_current_cov(eftfitter_density.nuisance_correlations, eftfitter_density, (p1=0.0, p2=0.0, ρ1=0.2)).m) ≈ [0.00376476   -0.000233614  -0.0202275   -0.0187827
                                                                                          -0.000233614   0.000562712   0.00125517   0.00116552;
                                                                                          -0.0202275     0.00125517    9.35082      0.100917;
                                                                                          -0.0187827     0.00116552    0.100917     8.04283] rtol=0.01                                 
         # test evaluation of correct likelihood value at a few points:
         @test DensityInterface.logdensityof(eftfitter_density, (p1=0.0, p2=0.0, ρ1=0)) ≈ -4088.80215 rtol=0.01
-        @test DensityInterface.logdensityof(eftfitter_density, (p1=10.0, p2=-30.0, ρ1=0)) ≈ -Inf
+        @test DensityInterface.logdensityof(eftfitter_density, (p1=10.0, p2=-30.0, ρ1=0)) ≈ -7.535812786310494e61 rtol=0.01
         @test DensityInterface.logdensityof(eftfitter_density, (p1=1.5, p2=-0.9, ρ1=0)) ≈ -699198.52 rtol=0.01
         @test DensityInterface.logdensityof(eftfitter_density, (p1=-1.2, p2=-0.8, ρ1=0)) ≈ -438653.692 rtol=0.01
         
         @test DensityInterface.logdensityof(eftfitter_density, (p1=0.0, p2=0.0, ρ1=0.1)) ≈ -4091.12445 rtol=0.01
-        @test DensityInterface.logdensityof(eftfitter_density, (p1=10.0, p2=-30.0, ρ1=0.2)) ≈ -Inf
+        @test DensityInterface.logdensityof(eftfitter_density, (p1=10.0, p2=-30.0, ρ1=0.2)) ≈ -7.539734831809737e61 rtol=0.01
         @test DensityInterface.logdensityof(eftfitter_density, (p1=1.5, p2=-0.9, ρ1=0.4)) ≈ -699985.42 rtol=0.01
     end
     
