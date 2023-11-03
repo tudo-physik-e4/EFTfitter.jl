@@ -2,7 +2,6 @@ export EFTfitterDensity
 
 #------------- Nuisance Correlation Indices -----------------------------------------#
 # internal struct for nuisance correlations (not to be confused with user-interface NuisanceCorrelation)
-# TODO: rename ?
 struct NuisanceCorrelationIndices
     unc::Int # index of uncertainty 
     i::Int # index of measurement 1
@@ -152,7 +151,7 @@ function EFTfitterDensity(m::EFTfitterModel)
 
     nuisance_correlations = build_nuisance_correlations(m.nuisances, m)
 
-    #TODO: make this a function returning a matrix. depending on if there are model uncertainties or not, and if we want to use cholesky 
+    #TODO: consider using cholesky ?
     crossmatrix = get_crossmatrix(mus, nuisance_correlations, m, weights)
 
     #TODO: add  support for limits
