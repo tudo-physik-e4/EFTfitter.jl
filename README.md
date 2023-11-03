@@ -18,7 +18,7 @@ Work-in-progress, interfaces and functionalities might be subject to changes.
 ## News
 Since version 0.2 of the package, the following new features are available:
 - Model uncertainties: The functions giving the predictions for the observable values can now also return a parameter-dependent value quantifying the uncertainty on the prediction. These uncertainties are currently treated as uncorrelated and are added to the total covariance matrix.
-- The data type of the (inverse) covariance matrix can now be set by the user. This can allow to increase the performance by speeding up the vector-matrix multiplication, e.g. in the case of sparse covariance matrices.
+- The data type of the (inverse) covariance matrix can now be set by the user. This can allow to increase the performance by speeding up the vector-matrix multiplication, e.g. in the case of sparse covariance matrices. The function `run_speed_test` can be used to determine which data type of the covariance matrix is the most suitable for the current model.
 - `MeasurementDistribution` is now called `BinnedMeasurement`
   
 
