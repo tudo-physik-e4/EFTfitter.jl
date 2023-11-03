@@ -19,9 +19,9 @@
 
 end
 
-# plot recipe for plotting a MeasurementDistribution object
+# plot recipe for plotting a BinnedMeasurement object
 @recipe function f(
-    measurement::MeasurementDistribution;
+    measurement::BinnedMeasurement;
     uncertainties = true,
     bin_names = String.(measurement.bin_names)
 )
@@ -75,7 +75,7 @@ end
     end
 end
 
-# plot recipe for plotting a particular MeasurementDistribution from a NamedTuple
+# plot recipe for plotting a particular BinnedMeasurement from a NamedTuple
 @recipe function f(
     measurements::NamedTuple{<:Any, <:Tuple{Vararg{AbstractMeasurement}}},
     name::Symbol;
@@ -90,7 +90,7 @@ end
 
 
 function total_uncertainty(
-    measurement::Union{Measurement, MeasurementDistribution},
+    measurement::Union{Measurement, BinnedMeasurement},
     uncertainty::Symbol
 )
     return measurement.uncertainties[uncertainty]
@@ -98,7 +98,7 @@ end
 
 # calculate the total uncertainty of a measurement by adding the quadratures
 function total_uncertainty(
-    measurement::Union{Measurement, MeasurementDistribution},
+    measurement::Union{Measurement, BinnedMeasurement},
     uncertainty::Union{Tuple{Vararg{Symbol}}, Vector{Symbol}}
 )
     total = zeros(length(measurement.uncertainties[1]))

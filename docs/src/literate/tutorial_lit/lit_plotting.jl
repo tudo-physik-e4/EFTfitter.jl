@@ -99,9 +99,9 @@ plot!(get_measurements(model), :Meas1, uncertainties=(:stat, :another_unc))
 #~When mutliple types of uncertainties are given, the sum of the squares is used as the total uncertainty.
 #~By default, all uncertainties included in the `EFTfitterModel` are used.
 
-#!jl # ## Plotting MeasurementDistributions
-#jl #~---------- Plotting MeasurementDistributions -------------------------
-#~`MeasurementDistribution`s can be plotted for fixed parameters:
+#!jl # ## Plotting BinnedMeasurements
+#jl #~---------- Plotting BinnedMeasurements -------------------------
+#~`BinnedMeasurement`s can be plotted for fixed parameters:
 plot(get_measurement_distributions(model).MeasDist.observable, (C1=1.2, C2=0))
 plot!(get_measurement_distributions(model), :MeasDist)
 #src p = plot(get_measurement_distributions(model).MeasDist.observable, (C1=1.2, C2=0))
@@ -117,7 +117,7 @@ plot!(get_measurement_distributions(model), :MeasDist, st=:scatter)
 #src savefig(p, "measdist_plot_2.png")
 #md # ![example plot](plots/measdist_plot_2.png)
 
-#~Also for `MeasurementDistribution`s the uncertainty types to be plotted can be specified.
+#~Also for `BinnedMeasurement`s the uncertainty types to be plotted can be specified.
 #~The names of the bins can be customized using the `bin_names` keyword.
 plot(get_measurement_distributions(model).MeasDist.observable, (C1=1.2, C2=0))
 plot!(get_measurement_distributions(model), :MeasDist, st=:scatter, uncertainties=(:stat,), bin_names=("First bin", "Second bin"))

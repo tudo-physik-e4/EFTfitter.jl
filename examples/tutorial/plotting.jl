@@ -1,4 +1,5 @@
 # EFTfitter.jl - Plotting Tutorial
+
 # EFTfitter includes several recipes for plotting its datatypes
 # using [Plots.jl](http://docs.juliaplots.org/latest/)
 using EFTfitter
@@ -49,7 +50,10 @@ for meas in get_measurements(model)
 end
 p
 
-# When plotting observables, the default title contains the values of the fixed# parameters. In case the title is too long for one line, linebreaks can be inserted# using the keyword `titlewidth`. e.g.:
+# When plotting observables, the default title contains the values of the fixed
+# parameters. In case the title is too long for one line, linebreaks can be inserted
+# using the keyword `titlewidth`. e.g.:
+
 plot(get_observables(model).xsec1, (C1=-10:0.01:10, C2=0, C3=100, C4=200), titlewidth=13)
 
 # ---------- Plotting Measurements -------------------------
@@ -71,8 +75,8 @@ plot!(get_measurements(model), :Meas1, uncertainties=(:stat, :another_unc))
 # When mutliple types of uncertainties are given, the sum of the squares is used as the total uncertainty.
 # By default, all uncertainties included in the `EFTfitterModel` are used.
 
-# ---------- Plotting MeasurementDistributions -------------------------
-# `MeasurementDistribution`s can be plotted for fixed parameters:
+# ---------- Plotting BinnedMeasurements -------------------------
+# `BinnedMeasurement`s can be plotted for fixed parameters:
 plot(get_measurement_distributions(model).MeasDist.observable, (C1=1.2, C2=0))
 plot!(get_measurement_distributions(model), :MeasDist)
 
@@ -80,7 +84,7 @@ plot!(get_measurement_distributions(model), :MeasDist)
 plot(get_measurement_distributions(model).MeasDist.observable, (C1=1.2, C2=0))
 plot!(get_measurement_distributions(model), :MeasDist, st=:scatter)
 
-# Also for `MeasurementDistribution`s the uncertainty types to be plotted can be specified.
+# Also for `BinnedMeasurement`s the uncertainty types to be plotted can be specified.
 # The names of the bins can be customized using the `bin_names` keyword.
 plot(get_measurement_distributions(model).MeasDist.observable, (C1=1.2, C2=0))
 plot!(get_measurement_distributions(model), :MeasDist, st=:scatter, uncertainties=(:stat,), bin_names=("First bin", "Second bin"))
@@ -108,4 +112,3 @@ p = plot(samples, 0.9, bins = 400, atol=0.01, y_offset=-0.1, label = "Samples A"
 p = plot!(samples, 0.9, bins = 100, atol=0.05, y_offset=0.1, msw = 5, ms=8, msc=:red, label = "Samples B")
 
 # This file was generated using Literate.jl, https://github.com/fredrikekre/Literate.jl
-

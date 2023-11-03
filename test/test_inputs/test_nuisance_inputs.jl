@@ -24,7 +24,7 @@ using BAT
         meas3 = Measurement(Observable(testfunc1, min=0, max=1000), 333.3, 
         uncertainties = (unc1=30.1, unc2=30.2, unc3=30.3), active=true),
         
-        meas4 = MeasurementDistribution(Function[testfunc1, testfunc1, testfunc1],
+        meas4 = BinnedMeasurement(Function[testfunc1, testfunc1, testfunc1],
         [10, 20, 30], uncertainties = (unc1=[0.11, 0.12, 0.13], unc2=[0.21, 0.22, 0.23], unc3=[0.31, 0.32, 0.33]),
         active = [true, false, true], bin_names=[Symbol("0_5"), Symbol("5_10"), Symbol("10_20")])
     )
@@ -63,19 +63,19 @@ using BAT
         ρ2 = NuisanceCorrelation(:unc1, :meas1, :meas2, truncated(Normal(0, 1), 0, 0.9)),
     )
 
-    model1 = EFTfitterModel(parameters1, measurements1, correlations1, nuisance_correlations)
+    model1 = EFTfitterModel(parameters1, measurements1, correlations1, limits=nothing, nuisances=nuisance_correlations, CovarianceType=Matrix)
 
     @testset "Test EFTfitterModel" begin
         @test length(model1.measurements) == 4
-        @test model1.measurements.meas1 == Measurement(Observable(testfunc1, -Inf, Inf), 111.1, (unc1=10.1, unc3=13.3), true)
-        @test model1.measurements.meas4_10_20 == Measurement(Observable(testfunc1, -Inf, Inf), 30., (unc1=0.13, unc3=0.33), true)
+        @test model1.measurements.meas1 == Measurement(Observable(testfunc1, min=-Inf, max=Inf), 111.1, (unc1=10.1, unc3=13.3), true)
+        @test model1.measurements.meas4_10_20 == Measurement(Observable(testfunc1, min=-Inf, max=Inf), 30., (unc1=0.13, unc3=0.33), true)
         @test keys(model1.measurements) == (:meas1, :meas3, :meas4_0_5, :meas4_10_20)  
         
-        @test model1.measurementdistributions.meas4.observable == [Observable(testfunc1, -Inf, Inf), Observable(testfunc1, -Inf, Inf)]
-        @test model1.measurementdistributions.meas4.value == [10., 30.]
-        @test model1.measurementdistributions.meas4.uncertainties == (unc1=[0.11, 0.13], unc3=[0.31, 0.33])
-        @test model1.measurementdistributions.meas4.active == [true, true]
-        @test model1.measurementdistributions.meas4.bin_names == [Symbol("0_5"), Symbol("10_20")] 
+        @test model1.measured_distributions.meas4.observable == [Observable(testfunc1), Observable(testfunc1)]
+        @test model1.measured_distributions.meas4.value == [10., 30.]
+        @test model1.measured_distributions.meas4.uncertainties == (unc1=[0.11, 0.13], unc3=[0.31, 0.33])
+        @test model1.measured_distributions.meas4.active == [true, true]
+        @test model1.measured_distributions.meas4.bin_names == [Symbol("0_5"), Symbol("10_20")] 
         
         @test length(model1.parameters._internal_distributions) == 3
         @test model1.parameters._internal_distributions.ρ1 == Uniform(0, 0.5)

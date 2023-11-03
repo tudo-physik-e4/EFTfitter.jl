@@ -12,12 +12,16 @@ using Parameters
 using RecipesBase
 using Requires
 using ValueShapes
+using TypedTables
+using BenchmarkTools # TODO: make optional
+using SparseArrays
 using DensityInterface
 import DensityInterface: logdensityof
 
 include("datatypes.jl")
 include("EFTfitterModel.jl")
 include("EFTfitterDensity.jl")
+include("EFTfitterLikelihood.jl")
 include("ranking/ranking.jl")
 include("plotting/plotting.jl")
 include("utils.jl")

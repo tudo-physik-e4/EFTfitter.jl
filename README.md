@@ -10,10 +10,17 @@
 
 New implementation of the [EFTfitter](https://github.com/tudo-physik-e4/EFTfitterRelease) in the [Julia languange](https://julialang.org/).  
 
-Tool for constraining the parameters of physics models using Bayesian inference by combining measurements of (different) observables.
-Particularly suited for EFT (effective field theory) interpretations. 
+EFTfitter is a tool for constraining the parameters of physics models using Bayesian inference by combining measurements of (different) observables.
+It is particularly suited for EFT (effective field theory) interpretations, but is not limited to these use cases.
 
 Work-in-progress, interfaces and functionalities might be subject to changes.
+
+## News
+Since version 0.2 of the package, the following new features are available:
+- Model uncertainties: The functions giving the predictions for the observable values can now also return a parameter-dependent value quantifying the uncertainty on the prediction. These uncertainties are currently treated as uncorrelated and are added to the total covariance matrix.
+- The data type of the (inverse) covariance matrix can now be set by the user. This can allow to increase the performance by speeding up the vector-matrix multiplication, e.g. in the case of sparse covariance matrices.
+- `MeasurementDistribution` is now called `BinnedMeasurement`
+  
 
 ## Installation
 The EFTfitter.jl package can be installed using:
@@ -27,7 +34,7 @@ Please see the [installation guide](https://tudo-physik-e4.github.io/EFTfitter.j
 
 ## Documentation & Tutorials
 Please see the [documentation](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/) for tutorials and information on how to use EFTfitter.jl.  
-Executable versions of the tutorials and examples can also be found [here](https://github.com/tudo-physik-e4/EFTfitter.jl/tree/main/examples/tutorials).
+Executable versions of the tutorials and examples can also be found [here](https://github.com/tudo-physik-e4/EFTfitter.jl/tree/main/examples).
 
 You can also try running the tutorials right now: [![badge](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/tudo-physik-e4/EFTfitter.jl/binder?urlpath=git-pull%3Frepo%3Dhttps%253A%252F%252Fgithub.com%252Ftudo-physik-e4%252FEFTfitter.jl%26urlpath%3Dtree%252FEFTfitter.jl%252Fexamples%252Fnotebooks%252F%26branch%3Dmain)
 
