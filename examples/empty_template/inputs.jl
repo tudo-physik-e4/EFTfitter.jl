@@ -1,6 +1,7 @@
 # EFTfitter.jl - Empty Template
+
 # ============= Parameters =============================================#
-parameters = BAT.NamedTupleDist(
+parameters = BAT.distprod(
     p1 = -2..2,
 )
 
@@ -15,7 +16,7 @@ end
 measurements = (
     Meas1 = Measurement(observable1, 0.0, uncertainties = (unc1 = 0.1,), active=true),
 
-    #MeasDist = MeasurementDistribution(obs_array, values_array, uncertainties = (unc1 = unc1_array,), active=false),
+    #MeasDist = BinnedMeasurement(obs_array, values_array, uncertainties = (unc1 = unc1_array,), active=false),
 )
 
 
@@ -29,4 +30,3 @@ correlations = (
 #)
 
 # This file was generated using Literate.jl, https://github.com/fredrikekre/Literate.jl
-

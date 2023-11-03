@@ -46,10 +46,9 @@ samples = bat_sample(posterior, algorithm).result;
 #~see the BAT.jl [tutorial](https://bat.github.io/BAT.jl/dev/tutorial/#Parameter-Space-Exploration-via-MCMC) 
 #~and [documentation](https://bat.github.io/BAT.jl/dev/stable_api/#BAT.bat_sample).
 
-#~We can then inspect the results of the sampling using BAT.jl's `SampledDensity`, 
+#~We can then inspect the results of the sampling using BAT.jl's `bat_report`, 
 #~giving a summary of the sampling and the results of the model parameters.
-sd = SampledDensity(posterior, samples)
-display(sd)
+bat_report(samples)
 #md ```
 #md ```
 #md BAT.jl - SampledDensity

@@ -14,7 +14,7 @@ Only active `Measurement` and `Correlation` objects will be considered.
 Fields:  
 * `parameters::BAT.NamedTupleDist`
 * `measurements::NamedTuple{<:Any, <:Tuple{Vararg{Measurement}}}`
-* `measurementdistributions::NamedTuple{<:Any, <:Tuple{Vararg{MeasurementDistribution}}}`
+* `BinnedMeasurements::NamedTuple{<:Any, <:Tuple{Vararg{BinnedMeasurement}}}`
 * `correlations::NamedTuple{<:Any, <:Tuple{Vararg{Correlation}}}`
 * `nuisances::Union{NamedTuple{<:Any, <:Tuple{Vararg{NuisanceCorrelation}}}, Nothing}`
 
@@ -41,7 +41,7 @@ model = EFTfitterModel(parameters, measurements, correlations, nuisances) # with
 struct EFTfitterModel
     parameters::BAT.NamedTupleDist
     measurements::NamedTuple{<:Any, <:Tuple{Vararg{Measurement}}}
-    measured_distributions::NamedTuple{<:Any, <:Tuple{Vararg{MeasurementDistribution}}}
+    measured_distributions::NamedTuple{<:Any, <:Tuple{Vararg{BinnedMeasurement}}}
     limits::Union{NamedTuple{<:Any, <:Tuple{Vararg{AbstractLimit}}}, Nothing}
     correlations::NamedTuple{<:Any, <:Tuple{Vararg{Correlation}}}
     nuisances::Union{NamedTuple{<:Any, <:Tuple{Vararg{NuisanceCorrelation}}}, Nothing}
@@ -60,7 +60,7 @@ function EFTfitterModel(
     measurement_vec, measurement_keys = unpack(measurements)
     correlation_vec, uncertainty_keys = unpack(correlations)
 
-    # convert elements of MeasurementDistribution to Measurement for each bin
+    # convert elements of BinnedMeasurement to Measurement for each bin
     binned_measurements, binned_measurement_keys = convert_to_bins(measurement_vec, measurement_keys)
 
     active_measurements, active_measurement_keys, all_correlations = only_active_measurements(binned_measurements, binned_measurement_keys, correlation_vec)
@@ -99,9 +99,9 @@ get_measurements(m::EFTfitterModel) = m.measurements
 """
     get_measurement_distributions(m::EFTfitterModel)
 
-Returns a `NamedTuple` with the `MeasurementDistribution`s in the `EFTfitterModel`.
+Returns a `NamedTuple` with the `BinnedMeasurement`s in the `EFTfitterModel`.
 """
-get_measurement_distributions(m::EFTfitterModel) = m.measurementdistributions
+get_measurement_distributions(m::EFTfitterModel) = m.BinnedMeasurements
 
 
 """
@@ -162,7 +162,7 @@ function convert_to_bins(m::Measurement)
 end
 
 
-function convert_to_bins(md::MeasurementDistribution)
+function convert_to_bins(md::BinnedMeasurement)
     nbins = length(md.value)
     uncertainties = [[u[i] for u in md.uncertainties] for i in 1:nbins]
 
@@ -232,7 +232,7 @@ function create_distributions(
     m::NamedTuple{<:Any, <:Tuple{Vararg{AbstractMeasurement}}},
     uncertainty_keys::Vector{Symbol}
 )
-    active_idxs = [i for i in 1:length(m) if (isa(m[i], MeasurementDistribution) && any(m[i].active))]
+    active_idxs = [i for i in 1:length(m) if (isa(m[i], BinnedMeasurement) && any(m[i].active))]
     dists = [only_active_bins(m[i], uncertainty_keys) for i in active_idxs]
     dists_keys = [keys(m)[i] for i in active_idxs]
 
@@ -243,7 +243,7 @@ function create_distributions(
     end
 end
 
-function only_active_bins(md::MeasurementDistribution, uncertainty_keys::Vector{Symbol})
+function only_active_bins(md::BinnedMeasurement, uncertainty_keys::Vector{Symbol})
     obs = md.observable[md.active]
     vals = md.value[md.active]
 
@@ -251,7 +251,7 @@ function only_active_bins(md::MeasurementDistribution, uncertainty_keys::Vector{
     uncertainties = namedtuple(uncertainty_keys, unc)
     bin_names = md.bin_names[md.active]
 
-    return MeasurementDistribution(obs, vals, uncertainties=uncertainties, bin_names=bin_names)
+    return BinnedMeasurement(obs, vals, uncertainties=uncertainties, bin_names=bin_names)
 end
 
 
@@ -259,7 +259,7 @@ function keys_of_bins(m::Measurement, key::Symbol)
     return key
 end
 
-function keys_of_bins(md::MeasurementDistribution, key::Symbol)
+function keys_of_bins(md::BinnedMeasurement, key::Symbol)
     return [Symbol(String(key)*"_"*String(b)) for b in md.bin_names]
 end
 

@@ -1,4 +1,5 @@
 # EFTfitter.jl - Advanced Tutorial
+
 # This tutorial introduces some of the advanced functionalities of EFTfitter.jl
 # using a generic example. Please see the [tutorial] for basic usage of EFTfitter.
 using EFTfitter
@@ -10,7 +11,7 @@ using Plots # for plotting
 include("advanced_inputs.jl")
 
 # We need to modify the definition of the `EFTfitterModel` by also passing the `nuisance_correlations`:
-model = EFTfitterModel(parameters, measurements, correlations, nuisance_correlations)
+model = EFTfitterModel(parameters, measurements, correlations, nuisances = nuisance_correlations)
 
 posterior = PosteriorMeasure(model)
 
@@ -54,4 +55,3 @@ plot(uncertainty_ranking, title = "Ranking of uncertainty types")
 # Please see the [ranking documentation](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/api/#EFTfitter.rank_measurements) for further ranking criteria and keyword arguments.
 
 # This file was generated using Literate.jl, https://github.com/fredrikekre/Literate.jl
-

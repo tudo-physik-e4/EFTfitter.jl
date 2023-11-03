@@ -109,7 +109,7 @@ julia> tbl, benchmarks = run_speed_test(model)
 function run_speed_test(
     m::EFTfitterModel; 
     matrix_types = [Matrix, sparse, Symmetric], 
-    vs = rand(m.parameters, 10), 
+    vs = rand(m.parameters, 10), #TODO: this won't work for models with nuisance correlations
     verbose=true
 )
     @info "Running speed comparisons to find optimal data type for (inverse) covariance matrix!"

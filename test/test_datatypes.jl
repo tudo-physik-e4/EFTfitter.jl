@@ -20,10 +20,10 @@
     @test meas1 == meas2
     @test keys(meas1.uncertainties) == (:unc1, :unc2)
 
-    #Test type MeasurementDistribution:
-    measdist1 = MeasurementDistribution([obs1, obs1], [50.0, 49.9], 
+    #Test type BinnedMeasurement:
+    measdist1 = BinnedMeasurement([obs1, obs1], [50.0, 49.9], 
                uncertainties=(unc1=[0.5, 0.4], unc2=[0.3, 0.29]), active=[true, false])
-    measdist2 = MeasurementDistribution([obs1, obs1], [50.0, 49.9], 
+    measdist2 = BinnedMeasurement([obs1, obs1], [50.0, 49.9], 
                uncertainties=(unc1=[0.5, 0.4], unc2=[0.3, 0.29]), active=true)
     @test measdist1.active == [true, false]
     @test measdist2.active == [true, true]

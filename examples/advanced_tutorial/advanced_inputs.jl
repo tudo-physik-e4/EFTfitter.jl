@@ -1,11 +1,12 @@
 # EFTfitter.jl - Advanced Tutorial
+
 # This tutorial introduces some of the advanced functionalities of EFTfitter.jl
 # using a generic example. Please see the [tutorial] for basic usage of EFTfitter.
 
 
 # ============= Parameters =============================================#
 # We use the same parameters & priors as in the basic tutorial:
-parameters = BAT.NamedTupleDist(
+parameters = BAT.distprod(
     C1 = -3..3, # short for: Uniform(-3, 3)
     C2 = Normal(0, 0.5) # Normal distribution
 )
@@ -13,7 +14,7 @@ parameters = BAT.NamedTupleDist(
 
 # ============= Observables =============================================#
 # We use the same observables as in the basic tutorial. However, we use a different
-# way for creating the vector of functions for the MeasurementDistribution.
+# way for creating the vector of functions for the BinnedMeasurement.
 
 function xsec1(params)
     coeffs = [20.12, 5.56, 325.556]
@@ -29,14 +30,14 @@ function myfunc(params, c)
     return c[1] * params.C1 + c[2] * params.C1 * params.C2+ c[3] * params.C2
 end
 
-# When using distributions of measurements, a vector of functions with the predictions
-# for the observable needs to be passed containing a function for each of the bins which
-# have only the model parameters as their argument. Defining a separate function for each
+# When using binned measurements, a vector of functions giving the predictions
+# for the observable needs to be passed. It contains a function for each of bin and
+# has only the model parameters as its argument. Defining a separate function for each
 # bin can, however, become tedious for a large number of bins, especially since typically
 # the bins of a distribution have a similar functional dependence on the model parameters
 # and only differ in some coefficients. In such cases, it is possible to use Julia's
-# [metaprogramming](https://docs.julialang.org/en/v1/manual/metaprogramming/) features to
-# create the vector of functions. The distribution in our [basic tutorial](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/tutorial/)
+# anonymous functions to quickly create the vector of functions.
+# The distribution in our [basic tutorial](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/tutorial/)
 # has been defined by implementing three functions that all call the same function `myfunc`
 # but with different values for the coefficients
 # The same result can also be achieved like this:
@@ -51,16 +52,9 @@ function my_dist_func(params, i)
     return coeffs[1] * params.C1 + coeffs[2] * params.C1 * params.C2+ coeffs[3] * params.C2
 end
 
-# create an array of Functions with names `diff_xsec_binX`:
-diff_xsec=Function[]
-for i in 1:3
-    @eval begin
-        function $(Symbol("diff_xsec_bin$i"))(params)
-            return my_dist_func(params, $i)
-        end
-        push!(diff_xsec, $(Symbol("diff_xsec_bin$i")))
-    end
-end
+# create an array of anonymous functions
+
+diff_xsec = Function[x -> my_dist_func(x, i) for i in 1:3]
 
 # ============= Measurements =============================================#
 # Information about the uncertainties of measurements need to be provided to EFTfitter.jl
@@ -87,7 +81,7 @@ measurements = (
             uncertainties = (stat=0.6, syst=unc_syst[2], another_unc=1.1), active=true),
 
 
-    MeasDist = MeasurementDistribution(diff_xsec, [1.9, 2.93, 4.4],
+    MeasDist = BinnedMeasurement(diff_xsec, [1.9, 2.93, 4.4],
                 uncertainties = (stat = [0.7, 1.1, 1.2], syst= unc_syst[3:5], another_unc = [1.0, 1.2, 1.9]),
                 active=[true, false, true]),
 )
@@ -138,4 +132,3 @@ nuisance_correlations = (
 # the normal distribution accordingly.
 
 # This file was generated using Literate.jl, https://github.com/fredrikekre/Literate.jl
-

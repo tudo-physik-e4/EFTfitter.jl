@@ -32,10 +32,9 @@ samples = bat_sample(posterior, algorithm).result;
 # see the BAT.jl [tutorial](https://bat.github.io/BAT.jl/dev/tutorial/#Parameter-Space-Exploration-via-MCMC)
 # and [documentation](https://bat.github.io/BAT.jl/dev/stable_api/#BAT.bat_sample).
 
-# We can then inspect the results of the sampling using BAT.jl's `SampledDensity`,
+# We can then inspect the results of the sampling using BAT.jl's `bat_report`,
 # giving a summary of the sampling and the results of the model parameters.
-sd = SampledDensity(posterior, samples)
-display(sd)
+bat_report(samples)
 
 # Information about the smallest 1d intervals containing p% proability can be
 # obtained using the `get_smallest_interval_edges` function:

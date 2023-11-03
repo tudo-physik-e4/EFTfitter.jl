@@ -16,7 +16,7 @@
 # For our example, we consider two parameters with the names `C1` and `C2`.
 # For `C1` we choose a uniform (flat) prior in the range (-3, 3).
 # For `C2` we choose a gaussian prior with μ=0 and σ=0.5.
-parameters = BAT.NamedTupleDist(
+parameters = BAT.distprod(
     C1 = -3..3, # short for: Uniform(-3, 3)
     C2 = Normal(0, 0.5) # Normal distribution
 )
@@ -85,7 +85,7 @@ diff_xsec = [diff_xsec_bin1, diff_xsec_bin2, diff_xsec_bin3]
 # We can now enter measurements of the observables.
 # This is done by defining a [`NamedTuple`](https://docs.julialang.org/en/v1/manual/types/#Named-Tuple-Types)
 # consisting of [`Measurement`](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/api/#EFTfitter.Measurement)
-# and [`MeasurementDistribution`](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/api/#EFTfitter.MeasurementDistribution) objects.
+# and [`BinnedMeasurement`](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/api/#EFTfitter.BinnedMeasurement) objects.
 
 # A `Measurement` consists of the observable, the measured numerical value and
 # numerical values for the (multiple types of) uncertainties.
@@ -93,12 +93,12 @@ diff_xsec = [diff_xsec_bin1, diff_xsec_bin2, diff_xsec_bin3]
 # object or as a `Function`. When using the latter, the observable is assumed to be unconstrained.
 # The uncertainties are passed as a [`NamedTuple`](https://docs.julialang.org/en/v1/manual/types/#Named-Tuple-Types).
 # Each measurement has to provide uncertainty values for all of the (active) uncertainty
-# types (see next section on `Correlations`). For a `MeasurementDistribution`,
+# types (see next section on `Correlations`). For a `BinnedMeasurement`,
 # the corresponding inputs have to be passed as `Vectors`, where each element
 # represents one bin of the distribution.
 
 # A `Measurement` can be excluded from the model by setting the switch `active=false`.
-# For a `MeasurementDistribution`, the keyword `active` accepts `true` or `false`
+# For a `BinnedMeasurement`, the keyword `active` accepts `true` or `false`
 # to (de)activate the whole distribution or a vector of booleans for (de)activating only certain bins.
 
 measurements = (
@@ -108,13 +108,13 @@ measurements = (
     Meas2 = Measurement(Observable(xsec2, min=0), 1.9,
             uncertainties = (stat=0.6, syst=0.9, another_unc=1.1), active=true),
 
-    MeasDist = MeasurementDistribution(diff_xsec, [1.9, 2.93, 4.4],
+    MeasDist = BinnedMeasurement(diff_xsec, [1.9, 2.93, 4.4],
                uncertainties = (stat = [0.7, 1.1, 1.2], syst= [0.7, 0.8, 1.3], another_unc = [1.0, 1.2, 1.9]),
                active=[true, false, true]), # `active = false`: exclude all bins from fit, `active = [true, true, false]`: exclude only third bin from fit
 )
 
 # Further information on the constructors see the API documentation of [`Measurement`](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/api/#EFTfitter.Measurement)
-# and [`MeasurementDistribution`](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/api/#EFTfitter.MeasurementDistribution).
+# and [`BinnedMeasurement`](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/api/#EFTfitter.BinnedMeasurement).
 
 # Note: When using only one measurement or only one type of uncertainties,
 
@@ -131,7 +131,7 @@ measurements = (
 # of ``N \times N``, where ``N`` is the number of measurements, counting each bin of a distribution.
 # When a certain type of uncertainty should not be considered, it can be deactivated
 # by setting `active = false`. This means that the uncertainty values given in the
-# corresponding `Measurement` and `MeasurementDistribution` objects will not be used.
+# corresponding `Measurement` and `BinnedMeasurement` objects will not be used.
 
 # When assuming the uncertainties of all measurements are uncorrelated, you can
 # use the `NoCorrelation` object for easily passing an identity matrix of the correct size.
@@ -141,8 +141,8 @@ measurements = (
 # With the function `to_correlation_matrix`, it is possible to enter a correlation
 # matrix by simply specifying the names of the measurements that should be correlated
 # and the value of the corresponding correlation coefficient.
-# When using a `MeasurementDistribution`, the inter-bin correlations can also be
-# entered by passing a matrix. By appending `_binX` to the name of a `MeasurementDistribution`,
+# When using a `BinnedMeasurement`, the inter-bin correlations can also be
+# entered by passing a matrix. By appending `_binX` to the name of a `BinnedMeasurement`,
 # the Xth bin of the distribution can be accessed.
 # Note: This function is evaluated from top to bottom, so if you overwrite a
 # specific correlation value, the last value entered will be used.

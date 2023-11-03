@@ -28,9 +28,8 @@ posterior = PosteriorMeasure(model);
 algorithm = MCMCSampling(mcalg = MetropolisHastings(), nsteps = 10^5, nchains = 4)
 samples = bat_sample(posterior, algorithm).result;
 
-#~create and display a `SampledDensity` object for a quick overview of results:
-sd = SampledDensity(posterior, samples)
-display(sd)
+#~let's get a quick overview of results:
+bat_report(samples)
 
 #~ plot the posterior distribution:
 p = plot(samples)

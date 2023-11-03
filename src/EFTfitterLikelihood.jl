@@ -2,7 +2,7 @@ function iswithinbounds(r::Float64, min::Float64, max::Float64)
     return min <= r <= max
 end
 
-# TODO: add dispatch, return 1 by default
+
 function check_observable_bounds(cb::NoBoundsCheck, predictions, mins::Vector{Float64}, maxs::Vector{Float64})
     return 1.0
 end
@@ -93,7 +93,6 @@ function add_model_uncertainties_to_cov!(mus::NoModelUncertainties, covmatrix, p
 end
 
 
-#TODO: need type for covariance matrix
 function get_current_cov(nc::NuisanceCorrelations, D, params)
     for nui in D.nuisance_correlations.nuisance_correlations #TODO: rethink naming 
         i = nui.i; j = nui.j

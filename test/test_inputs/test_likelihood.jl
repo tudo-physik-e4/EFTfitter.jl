@@ -57,7 +57,7 @@ function create_model(N; use_model_uncertainties = false)
     measurements = (
         #meas1 = Measurement(testfunc, 3000.0, uncertainties = (unc = 50.1,)),
 
-        meas = MeasurementDistribution(func_arr, meas_arr,
+        meas = BinnedMeasurement(func_arr, meas_arr,
                     uncertainties = (unc = unc_arr,)),
     )
 

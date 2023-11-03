@@ -1,7 +1,7 @@
 export Observable
 
 export Measurement
-export MeasurementDistribution
+export BinnedMeasurement
 
 export Correlation
 export NoCorrelation
@@ -111,7 +111,7 @@ end
 
 #----- Measurement Distribution-----------------------------------------
 """
-    struct MeasurementDistribution
+    struct BinnedMeasurement
 
 Fields:  
     * `observable::Array{Observable, 1}`: Observables that are measured.
@@ -122,7 +122,7 @@ Fields:
 
 Constructors:  
 ```julia
-MeasurementDistribution(
+BinnedMeasurement(
     observable::Array{Observable, 1},
     values::Array{<:Real, 1};
     uncertainties::NamedTuple{<:Any, <:Tuple{Vararg{Union{Vector{Float64}, Vector{Int64}}}}},
@@ -132,7 +132,7 @@ MeasurementDistribution(
 ```
 
 ```julia
-MeasurementDistribution(
+BinnedMeasurement(
     observable::Array{Function, 1},
     values::Array{<:Real, 1};
     uncertainties::NamedTuple{<:Any, <:Tuple{Vararg{Union{Vector{Float64}, Vector{Int64}}}}},
@@ -141,7 +141,7 @@ MeasurementDistribution(
 )
 ```
 """
-struct MeasurementDistribution <: AbstractMeasurement
+struct BinnedMeasurement <: AbstractMeasurement
     observable::Array{Observable, 1}
     value::Array{Float64, 1}
     uncertainties::NamedTuple{<:Any, <:Tuple{Vararg{Array{Float64, 1}}}}
@@ -150,7 +150,7 @@ struct MeasurementDistribution <: AbstractMeasurement
 end
 
 # constructor with default value active=true and names "bin1", ...
-function MeasurementDistribution(
+function BinnedMeasurement(
     observables::Array{Observable, 1},
     value::Array{<:Real, 1};
     uncertainties::NamedTuple{<:Any, <:Tuple{Vararg{Vector{<:Real}}}},
@@ -160,11 +160,11 @@ function MeasurementDistribution(
     isa(active, Bool) ? active = fill(active, length(value)) : nothing
     unc = namedtuple(keys(uncertainties), float.(NamedTupleTools.values(uncertainties)))
 
-    MeasurementDistribution(observables, value, unc, active, bin_names)
+    BinnedMeasurement(observables, value, unc, active, bin_names)
 end
 
 # constructor converting Function to Observable with default value active=true and names "bin1", ...
-function MeasurementDistribution(
+function BinnedMeasurement(
     observables::Array{Function, 1},
     value::Array{<:Real, 1};
     uncertainties::NamedTuple{<:Any, <:Tuple{Vararg{Vector{<:Real}}}},
@@ -175,7 +175,7 @@ function MeasurementDistribution(
     isa(active, Bool) ? active = fill(active, length(value)) : nothing
     unc = namedtuple(keys(uncertainties), float.(NamedTupleTools.values(uncertainties)))
 
-    MeasurementDistribution(obs, value, unc, active, bin_names)
+    BinnedMeasurement(obs, value, unc, active, bin_names)
 end
 
 #----- TODO: Limits -----------------------------------------

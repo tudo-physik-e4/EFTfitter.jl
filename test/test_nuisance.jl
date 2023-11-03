@@ -26,7 +26,7 @@ measurements = (
     meas3 = Measurement(Observable(testfunc1, min=0, max=1000), 333.3, 
     uncertainties = (unc1=30.1, unc2=30.2, unc3=30.3), active=true),
     
-    meas4 = MeasurementDistribution(Function[testfunc1, testfunc1, testfunc1],
+    meas4 = BinnedMeasurement(Function[testfunc1, testfunc1, testfunc1],
     [10, 20, 30], uncertainties = (unc1=[0.11, 0.12, 0.13], unc2=[0.21, 0.22, 0.23], unc3=[0.31, 0.32, 0.33]),
     active = [true, false, true], bin_names=[Symbol("0_5"), Symbol("5_10"), Symbol("10_20")])
 )

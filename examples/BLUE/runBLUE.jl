@@ -1,4 +1,5 @@
 # EFTfitter.jl - BLUE Example
+
 # When using multiple measurements of a single observable and a uniform prior for
 # the parameter representing the combined value, the combination of measurements performed with EFTfitter.jl
 # yields the same results as the Best Linear Unbiased Estimator (BLUE) method.
@@ -64,9 +65,9 @@ println("Mode: $(mode(samples).τ)")
 println("Mean: $(mean(samples).τ) ± $(std(samples).τ)")
 
 # comparison with BLUE method:
+
 blue = BLUE(model)
 println("BLUE: $(blue.value) ± $(blue.unc)")
 println("BLUE weights: $(blue.weights)")
 
 # This file was generated using Literate.jl, https://github.com/fredrikekre/Literate.jl
-

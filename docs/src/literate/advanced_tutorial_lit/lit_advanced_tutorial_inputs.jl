@@ -12,7 +12,7 @@
 #nb # ### Parameters 
 #jl #~============= Parameters =============================================# 
 #!md #~We use the same parameters & priors as in the basic tutorial: 
-#!md parameters = BAT.NamedTupleDist(
+#!md parameters = BAT.distprod(
 #!md     C1 = -3..3, # short for: Uniform(-3, 3)
 #!md     C2 = Normal(0, 0.5) # Normal distribution
 #!md )
@@ -21,7 +21,7 @@
 #nb # ### Observables
 #jl #~============= Observables =============================================#
 #!md #~We use the same observables as in the basic tutorial. However, we use a different
-#!md #~way for creating the vector of functions for the MeasurementDistribution.
+#!md #~way for creating the vector of functions for the BinnedMeasurement.
 
 #!md function xsec1(params)
 #!md     coeffs = [20.12, 5.56, 325.556]
@@ -38,15 +38,15 @@
 #!md end
 
 #-
-#md # ## Vector of functions for a MeasurementDistribution
-#~When using distributions of measurements, a vector of functions with the predictions 
-#~for the observable needs to be passed containing a function for each of the bins which 
-#~have only the model parameters as their argument. Defining a separate function for each 
+#md # ## Vector of functions for a BinnedMeasurement
+#~When using binned measurements, a vector of functions giving the predictions 
+#~for the observable needs to be passed. It contains a function for each of bin and 
+#~has only the model parameters as its argument. Defining a separate function for each 
 #~bin can, however, become tedious for a large number of bins, especially since typically 
 #~the bins of a distribution have a similar functional dependence on the model parameters 
 #~and only differ in some coefficients. In such cases, it is possible to use Julia's 
-#~[metaprogramming](https://docs.julialang.org/en/v1/manual/metaprogramming/) features to 
-#~create the vector of functions. The distribution in our [basic tutorial](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/tutorial/) 
+#~anonymous functions to quickly create the vector of functions.  
+#~The distribution in our [basic tutorial](https://tudo-physik-e4.github.io/EFTfitter.jl/dev/tutorial/) 
 #~has been defined by implementing three functions that all call the same function `myfunc` 
 #~but with different values for the coefficients
 #~The same result can also be achieved like this:  
@@ -62,16 +62,8 @@ function my_dist_func(params, i)
 end
 
 
-# create an array of Functions with names `diff_xsec_binX`:
-diff_xsec=Function[]
-for i in 1:3
-    @eval begin 
-        function $(Symbol("diff_xsec_bin$i"))(params)
-            return my_dist_func(params, $i)
-        end
-        push!(diff_xsec, $(Symbol("diff_xsec_bin$i")))
-    end
-end
+# create an array of anonymous functions
+diff_xsec = Function[x -> my_dist_func(x, i) for i in 1:3]
 
 #nb # ### Measurements
 #jl #~============= Measurements =============================================# 
@@ -102,7 +94,7 @@ measurements = (
             uncertainties = (stat=0.6, syst=unc_syst[2], another_unc=1.1), active=true),
 
 
-    MeasDist = MeasurementDistribution(diff_xsec, [1.9, 2.93, 4.4],
+    MeasDist = BinnedMeasurement(diff_xsec, [1.9, 2.93, 4.4],
                 uncertainties = (stat = [0.7, 1.1, 1.2], syst= unc_syst[3:5], another_unc = [1.0, 1.2, 1.9]),
                 active=[true, false, true]), 
 )

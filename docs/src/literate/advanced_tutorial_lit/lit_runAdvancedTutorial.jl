@@ -27,7 +27,7 @@
 #jl include("advanced_inputs.jl")
 
 #~We need to modify the definition of the `EFTfitterModel` by also passing the `nuisance_correlations`:
-model = EFTfitterModel(parameters, measurements, correlations, nuisance_correlations)
+model = EFTfitterModel(parameters, measurements, correlations, nuisances = nuisance_correlations)
 
 #!md posterior = PosteriorMeasure(model)
 #!md 
