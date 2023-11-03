@@ -71,10 +71,11 @@ logp(rand(posterior.prior))
 @test logp(v) ≈ -5.213494198124699e9
 
 
-t = @benchmark logp(v)
+t = @benchmark logp(v) 
+#TODO: why did this increase so much?
 @test t.allocs == 15
 @test t.memory == 720
-@test minimum(t.times) ≈ 226 atol=5
+@test minimum(t.times) ≈ 226 atol=5 
 
 myf = function(f, x)
     for i in 1:10000
@@ -83,3 +84,5 @@ myf = function(f, x)
 end
 
 @profview myf(logp, v)
+
+# add tests that values with nuisances are correct

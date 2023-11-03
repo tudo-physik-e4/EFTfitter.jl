@@ -22,10 +22,10 @@ measurements = (
     meas1 = Measurement(testfunc1, 111.1, 
     uncertainties = (unc1=10.1, unc2=12.2, unc3=13.3), active=true),
     
-    meas2 = Measurement(Observable(testfunc1, min=0, max=1000), 222.2, 
+    meas2 = Measurement(Observable(testfunc1, min=0, max=200000), 222.2, 
     uncertainties = (unc1=20.1, unc2=20.2, unc3=23.3), active=false),
     
-    meas3 = Measurement(Observable(testfunc1, min=0, max=1000), 333.3, 
+    meas3 = Measurement(Observable(testfunc1, min=0, max=200000), 333.3, 
     uncertainties = (unc1=30.1, unc2=30.2, unc3=30.3), active=true),
     
     meas4 = BinnedMeasurement(Function[testfunc1, testfunc1, testfunc1],
@@ -68,6 +68,10 @@ logp(v)
 
 
 t = @benchmark logp(v)
+#TODO: why did this increase so much?
 @test t.allocs == 15
 @test t.memory == 720
 @test minimum(t.times) ≈ 226 atol=5
+
+
+# add tests that values with model uncertainties are correct

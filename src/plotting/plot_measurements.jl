@@ -75,19 +75,6 @@ end
     end
 end
 
-# plot recipe for plotting a particular BinnedMeasurement from a NamedTuple
-@recipe function f(
-    measurements::NamedTuple{<:Any, <:Tuple{Vararg{AbstractMeasurement}}},
-    name::Symbol;
-    uncertainties = true
-)
-    @series begin
-        label --> string(name)
-        uncertainties --> uncertainties
-        measurements[name]
-    end
-end
-
 
 function total_uncertainty(
     measurement::Union{Measurement, BinnedMeasurement},
