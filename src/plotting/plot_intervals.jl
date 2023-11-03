@@ -5,7 +5,7 @@ function get_parameter_names(samples::DensitySampleVector)
     return parameter_names
 end
 
-
+#TODO: move to BAT.jl (type piracy)
 @recipe function f(
     maybe_shaped_samples::DensitySampleVector,
     p::Float64;
@@ -37,7 +37,7 @@ end
             seriestype --> :path
             markerstrokealpha := 0
             linewidth --> 1e-20
-            markerstrokewidth --> 1
+            markerstrokewidth --> 3
             markersize --> 5
             markerstrokecolor --> :steelblue
             linecolor := internal_color

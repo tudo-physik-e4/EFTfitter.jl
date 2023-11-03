@@ -30,6 +30,25 @@ function myfunc(params, c)
     return c[1] * params.C1 + c[2] * params.C1 * params.C2+ c[3] * params.C2
 end
 
+
+# The predictions for the observables can be affected by uncertainties that
+# dependend on the current value of the model parameters. Such uncertainties can be included
+# in the analysis by letting the observable functions return a tuple of numbers, where
+# the first number is the prediction and the second number is the absolute uncertainty on that prediction.
+function xsec1(params)
+    coeffs = [20.12, 5.56, 325.556]
+    prediction = myfunc(params, coeffs)
+    uncertainty = 0.1 * prediction # assume a 10% uncertainty
+    return (prediction, uncertainty)
+end
+
+# Note: It is possible to specify a model uncertainty only for some of the observables.
+# When the observable functions returns a single number, EFTfitter.jl will assume that the
+# model uncertainty is zero for this observable. However, please note that as soon as one observable function
+# returns a tuple, the runtime of the model will probably increase, as the model uncertainties then need to be evaluate in each step.
+# Therefore, model uncertainties should only be used when the uncertainty value is depending on the
+# model parameters. Constant uncertainties should just be specified in the `uncertainties` field of the measurements.
+
 # When using binned measurements, a vector of functions giving the predictions
 # for the observable needs to be passed. It contains a function for each of bin and
 # has only the model parameters as its argument. Defining a separate function for each
