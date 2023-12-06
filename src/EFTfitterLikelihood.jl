@@ -34,6 +34,45 @@ function evaluate_funcs!(muncs::HasModelUncertainties, D::EFTfitterDensity, curr
 end
 
 
+function evaluate_limit_funcs!(D::EFTfitterDensity, current_params) 
+    funcs = D.limit_functions
+    for i in eachindex(funcs)
+        res::Prediction = Prediction(funcs[i](current_params))
+        D.limit_predictions[Threads.threadid(), i] = res.pred
+    end
+end
+
+#only limits
+# function DensityInterface.logdensityof(
+#     D::EFTfitterDensity,
+#     params
+# )
+#     evaluate_limit_funcs!(D, params)
+    
+#     res = 0.
+#     for i in 1:length(D.limit_distributions)
+#         res += logpdf(D.limit_distributions[i], D.limit_predictions[Threads.threadid(), i])
+#     end
+
+#     return res 
+# end
+
+
+function get_limit_factor(
+    D::EFTfitterDensity,
+    params
+)
+    evaluate_limit_funcs!(D, params)
+    
+    res = 0.
+    for i in 1:length(D.limit_distributions)
+        res += logpdf(D.limit_distributions[i], D.limit_predictions[Threads.threadid(), i])
+    end
+
+    return res 
+end
+
+# # default EFTfitter
 function DensityInterface.logdensityof(
     D::EFTfitterDensity,
     params
@@ -44,7 +83,9 @@ function DensityInterface.logdensityof(
 
     result = calculate_likelihood(D.model_uncertainties, D.nuisance_correlations, D, params)
 
-    return bounds_factor * result
+    limit_factor = get_limit_factor(D, params)
+
+    return bounds_factor * (result + limit_factor)
 end
 
 # no model uncertainties & no limits, weights are already included in the inverse covariance matrix

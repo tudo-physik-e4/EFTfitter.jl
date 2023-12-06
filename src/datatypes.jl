@@ -198,6 +198,25 @@ end
 #----- TODO: Limits -----------------------------------------
 abstract type AbstractLimit end
 
+struct ExponentialUpperLimit <: AbstractLimit
+    observable::Observable
+    limit::Float64
+    cl::Float64
+    active::Bool
+end
+
+function ExponentialUpperLimit(
+    observable::Function,
+    limit::Float64,
+    cl::Float64;
+    active::Bool = true
+)
+    ExponentialUpperLimit(Observable(observable), limit, cl, active)
+end
+
+export ExponentialUpperLimit
+
+
 struct GaussianUpperLimit <: AbstractLimit
     observable::Observable
     best_fit::Float64

@@ -83,9 +83,9 @@ struct EFTfitterDensity{
     check_bounds::B # whether to check observable bounds or not
     predictions::Matrix{Float64} 
     prediction_uncertainties::Matrix{Float64} # only used if model uncertainties are present
-    # limit_distributions::Vector{Distribution} # only used if limits are present
-    # limit_functions::Vector{Function}      # only used if limits are present
-    # limit_predictions::Matrix{Float64}    # only used if limits are present
+    limit_distributions::Vector{Distribution} # only used if limits are present
+    limit_functions::Vector{Function}      # only used if limits are present
+    limit_predictions::Matrix{Float64}    # only used if limits are present
     # limit_uncertainties::Matrix{Float64}  # only used if limits are present
     model_uncertainties::MU  # HasModelUncertainties or NoModelUncertainties
     limits::L   # HasLimits or NoLimits
@@ -155,11 +155,10 @@ function EFTfitterDensity(m::EFTfitterModel)
     crossmatrix = get_crossmatrix(mus, nuisance_correlations, m, weights)
 
     #TODO: add  support for limits
-    limits = NoLimits()
-    # limit_functions =  Function[]
-    # limit_distributions = Distribution[]
-    # limit_predictions = zeros(nthreads, length(limit_functions))
-    # limit_uncertainties = zeros(nthreads, length(limit_functions))
+    #println("Lims: ", m.limits)
+
+    limits, limit_functions, limit_distributions, limit_predictions = prepare_limits(m.limits, m)
+
 
     return EFTfitterDensity(
             measured_values,
@@ -171,14 +170,44 @@ function EFTfitterDensity(m::EFTfitterModel)
             check_bounds,
             predictions,
             prediction_uncertainties,
-            # limit_distributions,
-            # limit_functions,
-            # limit_predictions,
+            limit_distributions,
+            limit_functions,
+            limit_predictions,
             # limit_uncertainties,
             mus,
             limits,
             nuisance_correlations
         )
+end
+
+function prepare_limits(l::Nothing, m::EFTfitterModel)
+    return NoLimits(), Function[], Distribution[], zeros(0,0)
+end 
+
+function prepare_limits(l::Any, m::EFTfitterModel)
+    nthreads = Threads.nthreads()
+    limit_functions =  Function[lim.observable.prediction for lim in m.limits]
+    limit_distributions = Distribution[get_distribution(lim) for lim in m.limits]
+    limit_predictions = zeros(nthreads, length(limit_functions))
+    # limit_uncertainties = zeros(nthreads, length(limit_functions))
+    limits = length(limit_functions) > 0 ? HasLimits() : NoLimits()
+
+    return limits, limit_functions, limit_distributions, limit_predictions
+end
+
+
+function get_distribution(lim::ExponentialUpperLimit)
+    λ = - log(1. - lim.cl)/lim.limit
+    #println("lambda: ", 1/λ)
+    return Exponential(1/λ) 
+
+    # Z = 1.96 # this is for 95% CL
+    # μ = -0.001
+    # X = lim.limit
+    # σ = (X-μ)/Z 
+
+    # return Normal(μ, σ)
+
 end
 
 
