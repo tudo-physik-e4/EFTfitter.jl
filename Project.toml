@@ -1,7 +1,7 @@
 name = "EFTfitter"
 uuid = "2a2a6a96-a4ec-477f-941b-476720990667"
 authors = ["Cornelius Grunwald"]
-version = "0.2.0"
+version = "0.2.1"
 
 [deps]
 BAT = "c0cd4b16-88b7-57fa-983b-ab80aecada7e"
@@ -38,7 +38,7 @@ SpecialFunctions = "2.3"
 StatsBase = "0.32, 0.33, 0.34"
 TypedTables = "1.4"
 ValueShapes = "0.9, 0.10"
-julia = "1.8, 1.9"
+julia = "1.10"
 
 [extras]
 IntervalSets = "8197267c-284f-5f27-9208-e0e47529a953"
